@@ -9,9 +9,10 @@
 - [x] **Step 1.1: Data Models** - User, Skill, Category, Swap, Chat, Message, Transaction models
 - [x] **Step 1.2: Authentication** - Splash, Onboarding, Login, Signup screens with Email + Google
 - [x] **Step 1.3: Profile Setup** - 4-step wizard with modern UI
-- [ ] **Step 1.4: Home & Discovery** - 🔜 Next
+- [x] **Step 1.4: Home & Discovery** - Main shell, Home screen, User cards, User profile view
+- [ ] **Step 1.5: Swap Request Feature** - 🔜 Next
 
-**Progress: Phase 1 - 37.5% complete (3/8 steps)**
+**Progress: Phase 1 - 50% complete (4/8 steps)**
 
 ---
 
@@ -64,20 +65,20 @@ User onboarding wizard (4 steps).
 | ✅ | Skill chip list widget | `lib/features/profile/presentation/widgets/skill_chip_list.dart` |
 | ✅ | Add skill dialog | `lib/features/profile/presentation/widgets/add_skill_dialog.dart` |
 
-### 🔜 Step 1.4: Home & Discovery Feature - UP NEXT
+### ✅ Step 1.4: Home & Discovery Feature - COMPLETED
 Main app shell with bottom navigation.
 
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Main shell with BottomNav | `lib/features/main/presentation/screens/main_shell_screen.dart` |
-| ⬜ | Home screen | `lib/features/home/presentation/screens/home_screen.dart` |
-| ⬜ | User card widget | `lib/core/shared/widgets/user_card.dart` |
-| ⬜ | User avatar widget | `lib/core/shared/widgets/user_avatar.dart` |
-| ⬜ | Skill chip widget | `lib/core/shared/widgets/skill_chip.dart` |
-| ⬜ | Users list provider | `lib/features/home/presentation/providers/users_provider.dart` |
-| ⬜ | User profile view screen | `lib/features/user/presentation/screens/user_profile_view_screen.dart` |
+| ✅ | Main shell with BottomNav | `lib/features/main/presentation/screens/main_shell_screen.dart` |
+| ✅ | Home screen | `lib/features/home/presentation/screens/home_screen.dart` |
+| ✅ | User card widget | `lib/core/shared/widgets/user_card.dart` |
+| ✅ | User avatar widget | `lib/core/shared/widgets/user_avatar.dart` |
+| ✅ | Skill chip widget | `lib/core/shared/widgets/skill_chip.dart` |
+| ✅ | Users list provider | `lib/features/home/presentation/providers/users_provider.dart` |
+| ✅ | User profile view screen | `lib/features/user/presentation/screens/user_profile_view_screen.dart` |
 
-### ⬜ Step 1.5: Swap Request Feature
+### 🔜 Step 1.5: Swap Request Feature - UP NEXT
 Request and manage skill swaps.
 
 | Status | Task | Files |
@@ -248,8 +249,8 @@ Week 1-2: Foundation Setup ✅ DONE
 ├── 1.2 Authentication (splash → onboarding → login/signup) ✅
 └── 1.3 Profile Setup (4-step wizard) ✅
 
-Week 3-4: Profile & Home 🔜 IN PROGRESS
-├── 1.4 Home & Discovery (main shell, user list) ← NEXT
+Week 3-4: Profile & Home ✅ DONE
+├── 1.4 Home & Discovery (main shell, user list) ✅
 └── Test: User can sign up and see other users
 
 Week 5-6: Core Swap Flow
@@ -278,11 +279,11 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Step 1.4: Home & Discovery Feature**
-   - Create main shell with bottom navigation (Home, Matches, Chat, Wallet, Profile)
-   - Build home screen with user discovery list
-   - Create user card and avatar widgets
-   - Implement users list provider with Firestore query
+1. **Step 1.5: Swap Request Feature**
+   - Create swap repository interface and implementation
+   - Build swap request screen with skill selection
+   - Implement matches screen with tabs (Pending/Active/Completed)
+   - Create swap card and status badge widgets
 
 2. **Seed Test Data**
    - Add sample categories to Firestore

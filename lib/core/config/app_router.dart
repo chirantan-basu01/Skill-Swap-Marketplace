@@ -5,10 +5,12 @@ import 'package:skill_swap_marketplace/features/auth/presentation/screens/login_
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/signup_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/splash_screen.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_availability_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_basic_info_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_skills_offered_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_skills_wanted_screen.dart';
+import 'package:skill_swap_marketplace/features/user/presentation/screens/user_profile_view_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -110,7 +112,7 @@ class HomeRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Home');
+    return const MainShellScreen();
   }
 }
 
@@ -270,7 +272,7 @@ class UserProfileRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return _PlaceholderScreen(title: 'User: $userId');
+    return UserProfileViewScreen(userId: userId);
   }
 }
 
