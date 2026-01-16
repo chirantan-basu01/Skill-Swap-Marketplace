@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skill_swap_marketplace/core/constants/route_constants.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/screens/login_screen.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/screens/onboarding_screen.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/screens/signup_screen.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/screens/splash_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -14,7 +18,7 @@ class SplashRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Splash');
+    return const SplashScreen();
   }
 }
 
@@ -24,7 +28,7 @@ class OnboardingRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Onboarding');
+    return const OnboardingScreen();
   }
 }
 
@@ -34,7 +38,7 @@ class LoginRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Login');
+    return const LoginScreen();
   }
 }
 
@@ -44,7 +48,7 @@ class SignupRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Sign Up');
+    return const SignupScreen();
   }
 }
 
