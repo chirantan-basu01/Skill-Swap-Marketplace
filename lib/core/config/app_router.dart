@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skill_swap_marketplace/core/constants/route_constants.dart';
-import 'package:skill_swap_marketplace/scripts/seed_categories.dart';
 
 part 'app_router.g.dart';
 
@@ -15,7 +14,7 @@ class SplashRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _TempSplashScreen();
+    return const _PlaceholderScreen(title: 'Splash');
   }
 }
 
@@ -317,135 +316,6 @@ class AppRouter {
     routes: $appRoutes,
     errorBuilder: (context, state) => _ErrorScreen(error: state.error),
   );
-}
-
-// =============================================================================
-// TEMPORARY SPLASH SCREEN (for development/seeding)
-// =============================================================================
-
-/// Temporary splash screen with seed functionality
-class _TempSplashScreen extends StatefulWidget {
-  const _TempSplashScreen();
-
-  @override
-  State<_TempSplashScreen> createState() => _TempSplashScreenState();
-}
-
-class _TempSplashScreenState extends State<_TempSplashScreen> {
-  bool _isSeeding = false;
-  String _status = '';
-
-  Future<void> _seedCategories() async {
-    setState(() {
-      _isSeeding = true;
-      _status = 'Checking categories...';
-    });
-
-    try {
-      if (await categoriesExist()) {
-        setState(() {
-          _status = 'Categories already exist!';
-          _isSeeding = false;
-        });
-      } else {
-        setState(() => _status = 'Seeding categories...');
-        await seedCategories();
-        setState(() {
-          _status = 'Categories seeded successfully!';
-          _isSeeding = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _status = 'Error: $e';
-        _isSeeding = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.swap_horiz_rounded,
-              size: 80,
-              color: Colors.deepPurple,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Skill Swap',
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Marketplace',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.grey,
-                  ),
-            ),
-            const SizedBox(height: 48),
-            // Dev tools section
-            Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(horizontal: 32),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    'Development Tools',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: _isSeeding ? null : _seedCategories,
-                    icon: _isSeeding
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.cloud_upload),
-                    label: const Text('Seed Categories'),
-                  ),
-                  if (_status.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Text(
-                      _status,
-                      style: TextStyle(
-                        color: _status.contains('Error')
-                            ? Colors.red
-                            : Colors.green,
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  OutlinedButton(
-                    onPressed: () => const OnboardingRoute().go(context),
-                    child: const Text('Go to Onboarding →'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 // =============================================================================
