@@ -1,0 +1,206 @@
+// ignore_for_file: avoid_print
+/// Run this script ONCE to seed categories into Firestore.
+///
+/// Usage: Add a temporary button in your app to call seedCategories()
+/// or run via a test file.
+library;
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+/// Seeds all skill categories into Firestore
+Future<void> seedCategories() async {
+  final firestore = FirebaseFirestore.instance;
+  final batch = firestore.batch();
+
+  final categories = _getCategoriesData();
+
+  for (final category in categories) {
+    final docRef =
+        firestore.collection('categories').doc(category['id'] as String);
+    batch.set(docRef, category);
+  }
+
+  await batch.commit();
+  print('✅ Categories seeded successfully! (${categories.length} categories)');
+}
+
+/// Check if categories already exist
+Future<bool> categoriesExist() async {
+  final snapshot =
+      await FirebaseFirestore.instance.collection('categories').limit(1).get();
+  return snapshot.docs.isNotEmpty;
+}
+
+/// Seed only if categories don't exist
+Future<void> seedCategoriesIfNeeded() async {
+  if (await categoriesExist()) {
+    print('ℹ️ Categories already exist, skipping seed.');
+    return;
+  }
+  await seedCategories();
+}
+
+List<Map<String, dynamic>> _getCategoriesData() {
+  return [
+    {
+      'id': 'technology',
+      'name': 'Technology',
+      'icon': 'computer',
+      'order': 1,
+      'skills': [
+        {'id': 'flutter', 'name': 'Flutter'},
+        {'id': 'dart', 'name': 'Dart'},
+        {'id': 'python', 'name': 'Python'},
+        {'id': 'javascript', 'name': 'JavaScript'},
+        {'id': 'typescript', 'name': 'TypeScript'},
+        {'id': 'react', 'name': 'React'},
+        {'id': 'nodejs', 'name': 'Node.js'},
+        {'id': 'swift', 'name': 'Swift'},
+        {'id': 'kotlin', 'name': 'Kotlin'},
+        {'id': 'java', 'name': 'Java'},
+        {'id': 'csharp', 'name': 'C#'},
+        {'id': 'cpp', 'name': 'C++'},
+        {'id': 'go', 'name': 'Go'},
+        {'id': 'rust', 'name': 'Rust'},
+        {'id': 'sql', 'name': 'SQL'},
+        {'id': 'mongodb', 'name': 'MongoDB'},
+        {'id': 'firebase', 'name': 'Firebase'},
+        {'id': 'aws', 'name': 'AWS'},
+        {'id': 'docker', 'name': 'Docker'},
+        {'id': 'git', 'name': 'Git'},
+      ],
+    },
+    {
+      'id': 'design',
+      'name': 'Design',
+      'icon': 'brush',
+      'order': 2,
+      'skills': [
+        {'id': 'ui_design', 'name': 'UI Design'},
+        {'id': 'ux_design', 'name': 'UX Design'},
+        {'id': 'graphic_design', 'name': 'Graphic Design'},
+        {'id': 'figma', 'name': 'Figma'},
+        {'id': 'adobe_xd', 'name': 'Adobe XD'},
+        {'id': 'photoshop', 'name': 'Photoshop'},
+        {'id': 'illustrator', 'name': 'Illustrator'},
+        {'id': 'after_effects', 'name': 'After Effects'},
+        {'id': 'premiere_pro', 'name': 'Premiere Pro'},
+        {'id': 'blender', 'name': 'Blender'},
+        {'id': '3d_modeling', 'name': '3D Modeling'},
+        {'id': 'motion_graphics', 'name': 'Motion Graphics'},
+        {'id': 'logo_design', 'name': 'Logo Design'},
+        {'id': 'brand_identity', 'name': 'Brand Identity'},
+      ],
+    },
+    {
+      'id': 'music',
+      'name': 'Music',
+      'icon': 'music_note',
+      'order': 3,
+      'skills': [
+        {'id': 'guitar', 'name': 'Guitar'},
+        {'id': 'piano', 'name': 'Piano'},
+        {'id': 'drums', 'name': 'Drums'},
+        {'id': 'bass', 'name': 'Bass Guitar'},
+        {'id': 'violin', 'name': 'Violin'},
+        {'id': 'vocals', 'name': 'Vocals/Singing'},
+        {'id': 'music_theory', 'name': 'Music Theory'},
+        {'id': 'music_production', 'name': 'Music Production'},
+        {'id': 'ableton', 'name': 'Ableton Live'},
+        {'id': 'fl_studio', 'name': 'FL Studio'},
+        {'id': 'mixing', 'name': 'Mixing'},
+        {'id': 'mastering', 'name': 'Mastering'},
+        {'id': 'songwriting', 'name': 'Songwriting'},
+        {'id': 'dj', 'name': 'DJing'},
+      ],
+    },
+    {
+      'id': 'languages',
+      'name': 'Languages',
+      'icon': 'translate',
+      'order': 4,
+      'skills': [
+        {'id': 'english', 'name': 'English'},
+        {'id': 'spanish', 'name': 'Spanish'},
+        {'id': 'french', 'name': 'French'},
+        {'id': 'german', 'name': 'German'},
+        {'id': 'italian', 'name': 'Italian'},
+        {'id': 'portuguese', 'name': 'Portuguese'},
+        {'id': 'chinese', 'name': 'Chinese (Mandarin)'},
+        {'id': 'japanese', 'name': 'Japanese'},
+        {'id': 'korean', 'name': 'Korean'},
+        {'id': 'arabic', 'name': 'Arabic'},
+        {'id': 'russian', 'name': 'Russian'},
+        {'id': 'hindi', 'name': 'Hindi'},
+        {'id': 'sign_language', 'name': 'Sign Language'},
+      ],
+    },
+    {
+      'id': 'business',
+      'name': 'Business',
+      'icon': 'business',
+      'order': 5,
+      'skills': [
+        {'id': 'marketing', 'name': 'Marketing'},
+        {'id': 'digital_marketing', 'name': 'Digital Marketing'},
+        {'id': 'seo', 'name': 'SEO'},
+        {'id': 'social_media', 'name': 'Social Media Marketing'},
+        {'id': 'copywriting', 'name': 'Copywriting'},
+        {'id': 'content_writing', 'name': 'Content Writing'},
+        {'id': 'sales', 'name': 'Sales'},
+        {'id': 'negotiation', 'name': 'Negotiation'},
+        {'id': 'public_speaking', 'name': 'Public Speaking'},
+        {'id': 'presentation', 'name': 'Presentation Skills'},
+        {'id': 'leadership', 'name': 'Leadership'},
+        {'id': 'project_management', 'name': 'Project Management'},
+        {'id': 'entrepreneurship', 'name': 'Entrepreneurship'},
+        {'id': 'finance', 'name': 'Finance'},
+        {'id': 'accounting', 'name': 'Accounting'},
+        {'id': 'excel', 'name': 'Excel'},
+      ],
+    },
+    {
+      'id': 'lifestyle',
+      'name': 'Lifestyle',
+      'icon': 'self_improvement',
+      'order': 6,
+      'skills': [
+        {'id': 'cooking', 'name': 'Cooking'},
+        {'id': 'baking', 'name': 'Baking'},
+        {'id': 'fitness', 'name': 'Fitness Training'},
+        {'id': 'yoga', 'name': 'Yoga'},
+        {'id': 'meditation', 'name': 'Meditation'},
+        {'id': 'nutrition', 'name': 'Nutrition'},
+        {'id': 'photography', 'name': 'Photography'},
+        {'id': 'video_editing', 'name': 'Video Editing'},
+        {'id': 'gardening', 'name': 'Gardening'},
+        {'id': 'home_improvement', 'name': 'Home Improvement'},
+        {'id': 'sewing', 'name': 'Sewing'},
+        {'id': 'knitting', 'name': 'Knitting'},
+        {'id': 'woodworking', 'name': 'Woodworking'},
+      ],
+    },
+    {
+      'id': 'academic',
+      'name': 'Academic',
+      'icon': 'school',
+      'order': 7,
+      'skills': [
+        {'id': 'mathematics', 'name': 'Mathematics'},
+        {'id': 'physics', 'name': 'Physics'},
+        {'id': 'chemistry', 'name': 'Chemistry'},
+        {'id': 'biology', 'name': 'Biology'},
+        {'id': 'statistics', 'name': 'Statistics'},
+        {'id': 'data_science', 'name': 'Data Science'},
+        {'id': 'machine_learning', 'name': 'Machine Learning'},
+        {'id': 'economics', 'name': 'Economics'},
+        {'id': 'history', 'name': 'History'},
+        {'id': 'psychology', 'name': 'Psychology'},
+        {'id': 'philosophy', 'name': 'Philosophy'},
+        {'id': 'writing', 'name': 'Academic Writing'},
+        {'id': 'research', 'name': 'Research Methods'},
+        {'id': 'test_prep', 'name': 'Test Preparation'},
+      ],
+    },
+  ];
+}
