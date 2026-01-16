@@ -24,5 +24,5 @@ Map<String, dynamic> _$$CategoryImplToJson(_$CategoryImpl instance) =>
       'name': instance.name,
       'icon': instance.icon,
       'order': instance.order,
-      'skills': instance.skills,
+      'skills': instance.skills.map((e) => e.toJson()).toList(),
     };

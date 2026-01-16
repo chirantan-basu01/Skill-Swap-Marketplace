@@ -5,6 +5,10 @@ import 'package:skill_swap_marketplace/features/auth/presentation/screens/login_
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/signup_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/splash_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_availability_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_basic_info_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_skills_offered_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_skills_wanted_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -62,7 +66,7 @@ class SetupBasicInfoRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Basic Info');
+    return const SetupBasicInfoScreen();
   }
 }
 
@@ -72,7 +76,7 @@ class SetupSkillsOfferedRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Skills Offered');
+    return const SetupSkillsOfferedScreen();
   }
 }
 
@@ -82,7 +86,7 @@ class SetupSkillsWantedRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Skills Wanted');
+    return const SetupSkillsWantedScreen();
   }
 }
 
@@ -92,7 +96,7 @@ class SetupAvailabilityRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Availability');
+    return const SetupAvailabilityScreen();
   }
 }
 

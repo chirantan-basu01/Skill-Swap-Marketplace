@@ -72,9 +72,10 @@ Map<String, dynamic> _$$ChatModelImplToJson(_$ChatModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'participants': instance.participants,
-      'participantInfo': instance.participantInfo,
+      'participantInfo':
+          instance.participantInfo.map((k, e) => MapEntry(k, e.toJson())),
       'swapId': instance.swapId,
-      'lastMessage': instance.lastMessage,
+      'lastMessage': instance.lastMessage?.toJson(),
       'unreadCount': instance.unreadCount,
       'createdAt': const TimestampConverterNonNull().toJson(instance.createdAt),
       'updatedAt': const TimestampConverterNonNull().toJson(instance.updatedAt),

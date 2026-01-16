@@ -6,6 +6,7 @@ import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
 import 'package:skill_swap_marketplace/core/services/storage_service.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -69,9 +70,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     if (currentUser != null) {
-      // User is authenticated - go to home
-      // TODO: Check if profile setup is complete
-      const HomeRoute().go(context);
+      // User is authenticated - check if profile is complete
+      final isComplete = await ref.read(isProfileCompleteProvider.future);
+
+      if (!mounted) return;
+
+      if (isComplete) {
+        // Profile is complete - go to home
+        const HomeRoute().go(context);
+      } else {
+        // Profile is not complete - go to profile setup
+        const SetupBasicInfoRoute().go(context);
+      }
     } else {
       // User is not authenticated - go to login
       const LoginRoute().go(context);
