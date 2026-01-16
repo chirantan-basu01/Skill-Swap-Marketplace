@@ -9,6 +9,7 @@
 | Session Mode | **Online only** | No location features needed |
 | Skills | **Predefined + Custom** | Base categories with user suggestions |
 | Paid Services | **None** | 100% free stack |
+| Image Storage | **Skip for MVP** | Use Google photo, URL input, or default avatars |
 
 ---
 

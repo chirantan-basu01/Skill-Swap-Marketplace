@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "835086418788",
+    "project_id": "skill-swap-marketplace-6e668",
+    "storage_bucket": "skill-swap-marketplace-6e668.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835086418788:android:3d3faef702ae1a90147071",
+        "android_client_info": {
+          "package_name": "com.example.skill_swap_marketplace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835086418788-ai2s4a7u5kfq902qkk86aiplg0u7g11t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLv2GeluBwDFUsp6TEi1UZ2IvEOuHCWGY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835086418788-ai2s4a7u5kfq902qkk86aiplg0u7g11t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
