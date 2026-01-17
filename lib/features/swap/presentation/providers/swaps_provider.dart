@@ -20,71 +20,92 @@ SwapRepository swapRepository(SwapRepositoryRef ref) {
 /// Provider for all user swaps stream
 @riverpod
 Stream<List<SwapModel>> userSwaps(UserSwapsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
   final swapRepo = ref.watch(swapRepositoryProvider);
 
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
+
   if (currentUser == null) {
     return Stream.value([]);
   }
 
-  return swapRepo.getUserSwaps(currentUser.uid);
+  return swapRepo.getUserSwaps(currentUser.uid).handleError((error) {
+    // Return empty list on permission errors (e.g., during logout)
+    return <SwapModel>[];
+  });
 }
 
 /// Provider for incoming swap requests (where user is provider)
 @riverpod
 Stream<List<SwapModel>> incomingSwapRequests(IncomingSwapRequestsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
   final swapRepo = ref.watch(swapRepositoryProvider);
 
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
+
   if (currentUser == null) {
     return Stream.value([]);
   }
 
-  return swapRepo.getIncomingRequests(currentUser.uid);
+  return swapRepo.getIncomingRequests(currentUser.uid).handleError((error) {
+    return <SwapModel>[];
+  });
 }
 
 /// Provider for outgoing swap requests (where user is requester)
 @riverpod
 Stream<List<SwapModel>> outgoingSwapRequests(OutgoingSwapRequestsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
   final swapRepo = ref.watch(swapRepositoryProvider);
 
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
+
   if (currentUser == null) {
     return Stream.value([]);
   }
 
-  return swapRepo.getOutgoingRequests(currentUser.uid);
+  return swapRepo.getOutgoingRequests(currentUser.uid).handleError((error) {
+    return <SwapModel>[];
+  });
 }
 
 /// Provider for active swaps
 @riverpod
 Stream<List<SwapModel>> activeSwaps(ActiveSwapsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
   final swapRepo = ref.watch(swapRepositoryProvider);
 
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
+
   if (currentUser == null) {
     return Stream.value([]);
   }
 
-  return swapRepo.getActiveSwaps(currentUser.uid);
+  return swapRepo.getActiveSwaps(currentUser.uid).handleError((error) {
+    return <SwapModel>[];
+  });
 }
 
 /// Provider for completed swaps
 @riverpod
 Stream<List<SwapModel>> completedSwaps(CompletedSwapsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
   final swapRepo = ref.watch(swapRepositoryProvider);
 
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
+
   if (currentUser == null) {
     return Stream.value([]);
   }
 
-  return swapRepo.getCompletedSwaps(currentUser.uid);
+  return swapRepo.getCompletedSwaps(currentUser.uid).handleError((error) {
+    return <SwapModel>[];
+  });
 }
 
 /// Swap request state

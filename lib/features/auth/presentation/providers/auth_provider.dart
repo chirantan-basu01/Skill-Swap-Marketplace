@@ -4,6 +4,8 @@ import 'package:skill_swap_marketplace/core/shared/models/failure.dart';
 import 'package:skill_swap_marketplace/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/repositories/auth_repository.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
+import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
+import 'package:skill_swap_marketplace/features/wallet/presentation/providers/wallet_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -135,10 +137,15 @@ class AuthNotifier extends _$AuthNotifier {
         status: AuthStatus.error,
         error: failure,
       ),
-      (user) => state = AuthState(
-        status: AuthStatus.authenticated,
-        user: user,
-      ),
+      (user) {
+        // Invalidate user-dependent providers on sign-in for account switching
+        ref.invalidate(isProfileCompleteProvider);
+        ref.invalidate(currentUserProfileProvider);
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          user: user,
+        );
+      },
     );
   }
 
@@ -152,10 +159,15 @@ class AuthNotifier extends _$AuthNotifier {
         status: AuthStatus.error,
         error: failure,
       ),
-      (user) => state = AuthState(
-        status: AuthStatus.authenticated,
-        user: user,
-      ),
+      (user) {
+        // Invalidate user-dependent providers on sign-in for account switching
+        ref.invalidate(isProfileCompleteProvider);
+        ref.invalidate(currentUserProfileProvider);
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          user: user,
+        );
+      },
     );
   }
 
@@ -172,6 +184,16 @@ class AuthNotifier extends _$AuthNotifier {
   }
 
   Future<void> signOut() async {
+    // Invalidate user-dependent providers BEFORE signing out
+    // This ensures streams are cancelled before auth context changes
+    ref.invalidate(currentUserProfileProvider);
+    ref.invalidate(isProfileCompleteProvider);
+    ref.invalidate(userSwapsProvider);
+    ref.invalidate(walletStatsProvider);
+    ref.invalidate(creditBalanceProvider);
+    ref.invalidate(userTransactionsProvider);
+    ref.read(profileSetupNotifierProvider.notifier).reset();
+
     final result = await _authRepo.signOut();
 
     result.fold(
@@ -180,11 +202,6 @@ class AuthNotifier extends _$AuthNotifier {
         error: failure,
       ),
       (_) {
-        // Invalidate user-dependent providers
-        ref.invalidate(currentUserProfileProvider);
-        ref.invalidate(isProfileCompleteProvider);
-        ref.read(profileSetupNotifierProvider.notifier).reset();
-
         state = const AuthState(status: AuthStatus.unauthenticated);
       },
     );

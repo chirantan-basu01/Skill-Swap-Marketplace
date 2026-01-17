@@ -6,7 +6,7 @@ part of 'wallet_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$walletStatsHash() => r'd50c906f8da29280f2a34723fcff1e6222b2fb43';
+String _$walletStatsHash() => r'7680700103de164d8f0c1fd3441db81176e1db00';
 
 /// Provider for user's wallet stats
 ///
@@ -24,7 +24,7 @@ final walletStatsProvider = AutoDisposeStreamProvider<WalletStats>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WalletStatsRef = AutoDisposeStreamProviderRef<WalletStats>;
-String _$creditBalanceHash() => r'9383b8a8a0cf26c109e9c334c4ae2818407833a9';
+String _$creditBalanceHash() => r'94adec8a7e58f8a4171bb5543beb07f965fc6fdd';
 
 /// Provider for user's credit balance
 ///
@@ -43,7 +43,7 @@ final creditBalanceProvider = AutoDisposeStreamProvider<double>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CreditBalanceRef = AutoDisposeStreamProviderRef<double>;
-String _$userTransactionsHash() => r'0d2eeb7784f3c546fc99143bc29fbf6cf332850b';
+String _$userTransactionsHash() => r'c0972355d9fbbb152f7104abae5f45d5f0506da6';
 
 /// Provider for user's transactions
 ///

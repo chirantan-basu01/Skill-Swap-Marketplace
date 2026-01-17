@@ -17,6 +17,8 @@ import 'package:skill_swap_marketplace/features/swap/presentation/screens/matche
 import 'package:skill_swap_marketplace/features/swap/presentation/screens/swap_request_screen.dart';
 import 'package:skill_swap_marketplace/features/user/presentation/screens/user_profile_view_screen.dart';
 import 'package:skill_swap_marketplace/features/wallet/presentation/screens/wallet_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/settings_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_profile_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -266,7 +268,7 @@ class EditProfileRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Edit Profile');
+    return const EditProfileScreen();
   }
 }
 
@@ -288,7 +290,7 @@ class SettingsRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Settings');
+    return const SettingsScreen();
   }
 }
 

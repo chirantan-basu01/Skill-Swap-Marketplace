@@ -25,8 +25,9 @@ class WalletStats {
 /// Provider for user's wallet stats
 @riverpod
 Stream<WalletStats> walletStats(WalletStatsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
 
   if (currentUser == null) {
     return Stream.value(const WalletStats());
@@ -84,14 +85,18 @@ Stream<WalletStats> walletStats(WalletStatsRef ref) {
       totalSpent: totalSpent,
       transactionCount: transactionCount,
     );
+  }).handleError((error) {
+    // Return default value on permission errors (e.g., during logout)
+    return const WalletStats();
   });
 }
 
 /// Provider for user's credit balance
 @riverpod
 Stream<double> creditBalance(CreditBalanceRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
 
   if (currentUser == null) {
     return Stream.value(0);
@@ -105,14 +110,18 @@ Stream<double> creditBalance(CreditBalanceRef ref) {
     if (!doc.exists) return 1.0;
     final rawBalance = doc.data()?[UserFields.creditBalance];
     return (rawBalance is num) ? rawBalance.toDouble() : 1.0;
+  }).handleError((error) {
+    // Return default value on permission errors (e.g., during logout)
+    return 0.0;
   });
 }
 
 /// Provider for user's transactions
 @riverpod
 Stream<List<TransactionModel>> userTransactions(UserTransactionsRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
-  final currentUser = authRepo.currentUser;
+  // Watch auth state stream to trigger rebuild when user changes
+  final authState = ref.watch(authStateChangesProvider);
+  final currentUser = authState.valueOrNull;
 
   if (currentUser == null) {
     return Stream.value([]);

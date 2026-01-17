@@ -25,7 +25,7 @@ final swapRepositoryProvider = Provider<SwapRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SwapRepositoryRef = ProviderRef<SwapRepository>;
-String _$userSwapsHash() => r'35640dd7642a0839d10a00e06c23b38e9a223fa2';
+String _$userSwapsHash() => r'c3d6a474cfc3e02f12d049569439b000ed663c6d';
 
 /// Provider for all user swaps stream
 ///
@@ -44,7 +44,7 @@ final userSwapsProvider = AutoDisposeStreamProvider<List<SwapModel>>.internal(
 // ignore: unused_element
 typedef UserSwapsRef = AutoDisposeStreamProviderRef<List<SwapModel>>;
 String _$incomingSwapRequestsHash() =>
-    r'80798f57c9c50142e844f1b2989a3b32757fd5a9';
+    r'747be26d86bb5edac73449b933bd1d574f5dff51';
 
 /// Provider for incoming swap requests (where user is provider)
 ///
@@ -65,7 +65,7 @@ final incomingSwapRequestsProvider =
 // ignore: unused_element
 typedef IncomingSwapRequestsRef = AutoDisposeStreamProviderRef<List<SwapModel>>;
 String _$outgoingSwapRequestsHash() =>
-    r'd80f022ef8c3230d1179e71a29b046bc420991d8';
+    r'1d7fad6501727cf574b5a9fd651eaa3dd69bb85b';
 
 /// Provider for outgoing swap requests (where user is requester)
 ///
@@ -85,7 +85,7 @@ final outgoingSwapRequestsProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef OutgoingSwapRequestsRef = AutoDisposeStreamProviderRef<List<SwapModel>>;
-String _$activeSwapsHash() => r'8231d9075f0a436e5f3e4b783add0f0fa1bcb59c';
+String _$activeSwapsHash() => r'7a9d82180dcc14cf275e2361c58bcb24c637afc3';
 
 /// Provider for active swaps
 ///
@@ -103,7 +103,7 @@ final activeSwapsProvider = AutoDisposeStreamProvider<List<SwapModel>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ActiveSwapsRef = AutoDisposeStreamProviderRef<List<SwapModel>>;
-String _$completedSwapsHash() => r'00948277f065a527db8369e11ab554d3f1adb558';
+String _$completedSwapsHash() => r'13e19de62c4c52782e2a062f25e422f5a74f587b';
 
 /// Provider for completed swaps
 ///

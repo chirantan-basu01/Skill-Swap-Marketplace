@@ -4,17 +4,17 @@ import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
-import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
+import 'package:skill_swap_marketplace/features/wallet/presentation/providers/wallet_provider.dart';
 
-/// Profile screen with logout for testing
+/// Profile screen showing user's own profile
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProfileProvider);
-    final authState = ref.watch(authNotifierProvider);
+    final balanceAsync = ref.watch(creditBalanceProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -28,6 +28,18 @@ class ProfileScreen extends ConsumerWidget {
         ),
         backgroundColor: AppColors.surface,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.settings_outlined),
+          onPressed: () => const SettingsRoute().push(context),
+          tooltip: 'Settings',
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () => const EditProfileRoute().push(context),
+            tooltip: 'Edit Profile',
+          ),
+        ],
       ),
       body: userAsync.when(
         data: (user) {
@@ -62,13 +74,37 @@ class ProfileScreen extends ConsumerWidget {
 
                 const SizedBox(height: Dimensions.xs),
 
-                // User Email
-                Text(
-                  user.email,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
+                // User Bio
+                if (user.bio.isNotEmpty) ...[
+                  Text(
+                    user.bio,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
+                  const SizedBox(height: Dimensions.sm),
+                ],
+
+                // User Email
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.email_outlined,
+                      size: 14,
+                      color: AppColors.textTertiary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      user.email,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: Dimensions.lg),
@@ -87,6 +123,7 @@ class ProfileScreen extends ConsumerWidget {
                       _StatItem(
                         label: 'Swaps',
                         value: user.swapsCompleted.toString(),
+                        icon: Icons.swap_horiz,
                       ),
                       Container(
                         width: 1,
@@ -95,7 +132,11 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       _StatItem(
                         label: 'Rating',
-                        value: user.rating.average.toStringAsFixed(1),
+                        value: user.rating.count > 0
+                            ? user.rating.average.toStringAsFixed(1)
+                            : '-',
+                        icon: Icons.star,
+                        iconColor: AppColors.warning,
                       ),
                       Container(
                         width: 1,
@@ -104,7 +145,13 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       _StatItem(
                         label: 'Credits',
-                        value: '10.0', // TODO: Get from wallet
+                        value: balanceAsync.when(
+                          data: (balance) => balance.toStringAsFixed(1),
+                          loading: () => '...',
+                          error: (_, __) => '-',
+                        ),
+                        icon: Icons.monetization_on,
+                        iconColor: AppColors.success,
                       ),
                     ],
                   ),
@@ -112,24 +159,98 @@ class ProfileScreen extends ConsumerWidget {
 
                 const SizedBox(height: Dimensions.lg),
 
+                // Hours Exchanged
+                if (user.hoursExchanged > 0)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(Dimensions.md),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primaryBlue.withOpacity(0.1),
+                          AppColors.secondaryTeal.withOpacity(0.1),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(Dimensions.radiusMd),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.schedule,
+                          size: 20,
+                          color: AppColors.primaryBlue,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${user.hoursExchanged.toStringAsFixed(1)} hours of skills exchanged',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                const SizedBox(height: Dimensions.lg),
+
                 // Skills Offered
                 _SectionCard(
                   title: 'Skills I Teach',
                   icon: Icons.school_outlined,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: user.skillsOffered.map((skill) {
-                      return Chip(
-                        label: Text(skill.skillName),
-                        backgroundColor: AppColors.primarySurface,
-                        labelStyle: const TextStyle(
-                          color: AppColors.primaryBlue,
-                          fontSize: 12,
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                  emptyMessage: 'No teaching skills added yet',
+                  child: user.skillsOffered.isNotEmpty
+                      ? Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: user.skillsOffered.map((skill) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primarySurface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    skill.skillName,
+                                    style: const TextStyle(
+                                      color: AppColors.primaryBlue,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryBlue.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      skill.level.name,
+                                      style: const TextStyle(
+                                        color: AppColors.primaryBlue,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      : null,
                 ),
 
                 const SizedBox(height: Dimensions.md),
@@ -138,55 +259,122 @@ class ProfileScreen extends ConsumerWidget {
                 _SectionCard(
                   title: 'Skills I Want to Learn',
                   icon: Icons.lightbulb_outline,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: user.skillsWanted.map((skill) {
-                      return Chip(
-                        label: Text(skill.skillName),
-                        backgroundColor: AppColors.secondarySurface,
-                        labelStyle: const TextStyle(
-                          color: AppColors.secondaryTeal,
-                          fontSize: 12,
+                  emptyMessage: 'No learning goals added yet',
+                  child: user.skillsWanted.isNotEmpty
+                      ? Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: user.skillsWanted.map((skill) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.secondarySurface,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Text(
+                                skill.skillName,
+                                style: const TextStyle(
+                                  color: AppColors.secondaryTeal,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      : null,
+                ),
+
+                const SizedBox(height: Dimensions.md),
+
+                // Availability
+                _SectionCard(
+                  title: 'Availability',
+                  icon: Icons.access_time_outlined,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
                         ),
-                      );
-                    }).toList(),
+                        decoration: BoxDecoration(
+                          color: AppColors.gray100,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _getAvailabilityIcon(user.availability.name),
+                              size: 16,
+                              color: AppColors.textSecondary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              _formatAvailability(user.availability.name),
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (user.timezone.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.gray100,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.public,
+                                size: 16,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                user.timezone,
+                                style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: Dimensions.xl),
 
-                // Logout Button
+                // Edit Profile Button
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: authState.status == AuthStatus.loading
-                        ? null
-                        : () => _handleLogout(context, ref),
-                    icon: authState.status == AuthStatus.loading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.logout_rounded),
-                    label: Text(authState.status == AuthStatus.loading ? 'Signing out...' : 'Sign Out'),
+                    onPressed: () => const EditProfileRoute().push(context),
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Edit Profile'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: const BorderSide(color: AppColors.error),
+                      foregroundColor: AppColors.primaryBlue,
+                      side: const BorderSide(color: AppColors.primaryBlue),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                  ),
-                ),
-
-                const SizedBox(height: Dimensions.md),
-
-                // Dev info
-                Text(
-                  'User ID: ${user.uid}',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: AppColors.textTertiary,
                   ),
                 ),
 
@@ -199,37 +387,54 @@ class ProfileScreen extends ConsumerWidget {
           child: CircularProgressIndicator(color: AppColors.primaryBlue),
         ),
         error: (error, _) => Center(
-          child: Text('Error: $error'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.gray300,
+              ),
+              const SizedBox(height: Dimensions.md),
+              Text(
+                'Error loading profile',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Future<void> _handleLogout(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Sign Out'),
-          ),
-        ],
-      ),
-    );
+  IconData _getAvailabilityIcon(String availability) {
+    switch (availability) {
+      case 'morning':
+        return Icons.wb_sunny_outlined;
+      case 'afternoon':
+        return Icons.wb_cloudy_outlined;
+      case 'evening':
+        return Icons.nights_stay_outlined;
+      case 'flexible':
+      default:
+        return Icons.schedule;
+    }
+  }
 
-    if (confirmed == true) {
-      await ref.read(authNotifierProvider.notifier).signOut();
-      if (context.mounted) {
-        const LoginRoute().go(context);
-      }
+  String _formatAvailability(String availability) {
+    switch (availability) {
+      case 'morning':
+        return 'Mornings';
+      case 'afternoon':
+        return 'Afternoons';
+      case 'evening':
+        return 'Evenings';
+      case 'flexible':
+      default:
+        return 'Flexible';
     }
   }
 }
@@ -237,20 +442,40 @@ class ProfileScreen extends ConsumerWidget {
 class _StatItem extends StatelessWidget {
   final String label;
   final String value;
+  final IconData? icon;
+  final Color? iconColor;
 
-  const _StatItem({required this.label, required this.value});
+  const _StatItem({
+    required this.label,
+    required this.value,
+    this.icon,
+    this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 16,
+                color: iconColor ?? AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
         Text(
@@ -268,12 +493,14 @@ class _StatItem extends StatelessWidget {
 class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
-  final Widget child;
+  final Widget? child;
+  final String? emptyMessage;
 
   const _SectionCard({
     required this.title,
     required this.icon,
-    required this.child,
+    this.child,
+    this.emptyMessage,
   });
 
   @override
@@ -304,7 +531,15 @@ class _SectionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: Dimensions.sm),
-          child,
+          child ??
+              Text(
+                emptyMessage ?? 'None',
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textTertiary,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
         ],
       ),
     );

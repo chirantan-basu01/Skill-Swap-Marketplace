@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skill_swap_marketplace/core/shared/models/failure.dart';
 import 'package:skill_swap_marketplace/features/auth/data/repositories/user_repository_impl.dart';
@@ -14,21 +16,69 @@ UserRepository userRepository(UserRepositoryRef ref) {
   return UserRepositoryImpl();
 }
 
+/// Extension to add updateProfile method
+extension UserRepositoryExtension on UserRepository {
+  /// Update profile fields (convenience method)
+  Future<void> updateProfile({
+    required String displayName,
+    String? bio,
+    String? timezone,
+    Availability? availability,
+  }) async {
+    final uid = await _getCurrentUserId();
+    if (uid == null) throw Exception('No authenticated user');
+
+    // Use Firestore directly for atomic update
+    final updates = <String, dynamic>{
+      'displayName': displayName,
+      'updatedAt': DateTime.now(),
+    };
+
+    if (bio != null) updates['bio'] = bio;
+    if (timezone != null) updates['timezone'] = timezone;
+    if (availability != null) updates['availability'] = availability.name;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update(updates);
+  }
+
+  Future<String?> _getCurrentUserId() async {
+    return FirebaseAuth.instance.currentUser?.uid;
+  }
+}
+
+
 /// Provider for current user's profile stream
 @riverpod
 Stream<UserModel?> currentUserProfile(CurrentUserProfileRef ref) {
-  final authRepo = ref.watch(authRepositoryProvider);
   final userRepo = ref.watch(userRepositoryProvider);
 
-  final currentUser = authRepo.currentUser;
-  if (currentUser == null) {
-    return Stream.value(null);
-  }
+  // Watch auth state stream to trigger rebuild when user changes
+  // This is critical for account switching - without this, the provider
+  // won't rebuild because authRepositoryProvider returns the same instance
+  final authState = ref.watch(authStateChangesProvider);
 
-  return userRepo.getUserStream(currentUser.uid);
+  return authState.when(
+    data: (user) {
+      if (user == null) {
+        return Stream.value(null);
+      }
+      return userRepo.getUserStream(user.uid).handleError((error) {
+        // Return null on permission errors (e.g., during logout)
+        return null;
+      });
+    },
+    loading: () => Stream.value(null),
+    error: (_, __) => Stream.value(null),
+  );
 }
 
 /// Provider to check if profile setup is complete
+/// Note: This is a FutureProvider, so it should NOT watch StreamProviders
+/// to avoid "disposed during loading" errors. Account switching is handled
+/// by invalidating this provider in signOut() and signIn() methods.
 @riverpod
 Future<bool> isProfileComplete(IsProfileCompleteRef ref) async {
   final authRepo = ref.watch(authRepositoryProvider);

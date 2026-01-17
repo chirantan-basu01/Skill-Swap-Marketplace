@@ -106,6 +106,10 @@ class RouteNames {
   static const String signup = '/signup';
   static const String onboarding = '/onboarding';
 
+  // Profile
+  static const String editProfile = '/profile/edit';
+  static const String settings = '/settings';
+
   // Other screens
   static String chatDetail(String chatId) => '/chat/$chatId';
   static String swapRequest(String userId) => '/swap-request/$userId';

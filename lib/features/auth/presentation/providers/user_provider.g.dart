@@ -26,7 +26,7 @@ final userRepositoryProvider = Provider<UserRepository>.internal(
 // ignore: unused_element
 typedef UserRepositoryRef = ProviderRef<UserRepository>;
 String _$currentUserProfileHash() =>
-    r'207e7a36199ee26fc8a7fdc276c685995ff870ef';
+    r'f9408e2bc974280329a5e26704e4a3488e040daa';
 
 /// Provider for current user's profile stream
 ///
@@ -49,6 +49,9 @@ typedef CurrentUserProfileRef = AutoDisposeStreamProviderRef<UserModel?>;
 String _$isProfileCompleteHash() => r'62f6d05a03ea645fe41e831e91422542bfec3cf5';
 
 /// Provider to check if profile setup is complete
+/// Note: This is a FutureProvider, so it should NOT watch StreamProviders
+/// to avoid "disposed during loading" errors. Account switching is handled
+/// by invalidating this provider in signOut() and signIn() methods.
 ///
 /// Copied from [isProfileComplete].
 @ProviderFor(isProfileComplete)
