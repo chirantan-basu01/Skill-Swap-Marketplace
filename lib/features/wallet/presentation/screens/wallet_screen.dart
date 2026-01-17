@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
-import 'package:skill_swap_marketplace/core/constants/route_constants.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:skill_swap_marketplace/features/wallet/presentation/widgets/transaction_list.dart';
 
@@ -61,7 +60,8 @@ class WalletScreen extends ConsumerWidget {
                     if (stats.balance < 1.0) {
                       return LowBalancePrompt(
                         onStartTeaching: () {
-                          context.go(RouteNames.profile);
+                          // Switch to Profile tab (index 4) in the bottom navigation
+                          ref.read(navigationIndexProvider.notifier).state = 4;
                         },
                       );
                     }
@@ -91,7 +91,7 @@ class WalletScreen extends ConsumerWidget {
                   transactionsAsync.when(
                     data: (transactions) {
                       if (transactions.isEmpty) {
-                        return _buildEmptyTransactions();
+                        return _buildEmptyTransactions(ref);
                       }
 
                       // Group transactions by date
@@ -205,7 +205,7 @@ class WalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyTransactions() {
+  Widget _buildEmptyTransactions(WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(Dimensions.xl),
       child: Column(
@@ -236,7 +236,10 @@ class WalletScreen extends ConsumerWidget {
           ),
           const SizedBox(height: Dimensions.lg),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              // Switch to Home tab (index 0) in the bottom navigation
+              ref.read(navigationIndexProvider.notifier).state = 0;
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
               foregroundColor: Colors.white,

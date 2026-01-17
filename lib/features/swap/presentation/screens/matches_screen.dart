@@ -5,80 +5,65 @@ import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/widgets/swap_card.dart';
 
-class MatchesScreen extends ConsumerStatefulWidget {
+/// Provider for the matches screen tab index
+final matchesTabIndexProvider = StateProvider<int>((ref) => 0);
+
+class MatchesScreen extends ConsumerWidget {
   const MatchesScreen({super.key});
 
   @override
-  ConsumerState<MatchesScreen> createState() => _MatchesScreenState();
-}
-
-class _MatchesScreenState extends ConsumerState<MatchesScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        title: const Text(
-          'My Swaps',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
+  Widget build(BuildContext context, WidgetRef ref) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: AppColors.surface,
+          elevation: 0,
+          title: const Text(
+            'My Swaps',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          bottom: TabBar(
+            labelColor: AppColors.primaryBlue,
+            unselectedLabelColor: AppColors.textSecondary,
+            indicatorColor: AppColors.primaryBlue,
+            indicatorWeight: 3,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            tabs: [
+              _buildTabWithBadge(ref, 'Pending', _getPendingCount(ref)),
+              _buildTabWithBadge(ref, 'Active', _getActiveCount(ref)),
+              const Tab(text: 'Completed'),
+            ],
           ),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primaryBlue,
-          unselectedLabelColor: AppColors.textSecondary,
-          indicatorColor: AppColors.primaryBlue,
-          indicatorWeight: 3,
-          labelStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-          tabs: [
-            _buildTabWithBadge('Pending', _getPendingCount()),
-            _buildTabWithBadge('Active', _getActiveCount()),
-            const Tab(text: 'Completed'),
+        body: const TabBarView(
+          children: [
+            _PendingSwapsTab(),
+            _ActiveSwapsTab(),
+            _CompletedSwapsTab(),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          _PendingSwapsTab(),
-          _ActiveSwapsTab(),
-          _CompletedSwapsTab(),
-        ],
       ),
     );
   }
 
-  Widget _buildTabWithBadge(String label, AsyncValue<int> countAsync) {
+  Widget _buildTabWithBadge(WidgetRef ref, String label, AsyncValue<int> countAsync) {
     return Tab(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -112,7 +97,7 @@ class _MatchesScreenState extends ConsumerState<MatchesScreen>
     );
   }
 
-  AsyncValue<int> _getPendingCount() {
+  AsyncValue<int> _getPendingCount(WidgetRef ref) {
     final incoming = ref.watch(incomingSwapRequestsProvider);
     final outgoing = ref.watch(outgoingSwapRequestsProvider);
 
@@ -127,7 +112,7 @@ class _MatchesScreenState extends ConsumerState<MatchesScreen>
     );
   }
 
-  AsyncValue<int> _getActiveCount() {
+  AsyncValue<int> _getActiveCount(WidgetRef ref) {
     return ref.watch(activeSwapsProvider).whenData((swaps) => swaps.length);
   }
 }
@@ -152,7 +137,10 @@ class _PendingSwapsTab extends ConsumerWidget {
               title: 'No pending requests',
               subtitle: 'When you send or receive swap requests, they\'ll appear here',
               ctaText: 'Find Someone to Swap With',
-              onCtaTap: () => const HomeRoute().go(context),
+              onCtaTap: () {
+                // Switch to Home tab (index 0) in the bottom navigation
+                ref.read(navigationIndexProvider.notifier).state = 0;
+              },
             );
           }
 
@@ -294,7 +282,10 @@ class _ActiveSwapsTab extends ConsumerWidget {
             title: 'No active swaps',
             subtitle: 'Accept a request or have one accepted to start swapping',
             ctaText: 'Browse Pending Requests',
-            onCtaTap: () => const MatchesRoute().go(context),
+            onCtaTap: () {
+              // Switch to Pending tab (index 0) in the TabBarView
+              DefaultTabController.of(context).animateTo(0);
+            },
           );
         }
 
@@ -387,7 +378,10 @@ class _CompletedSwapsTab extends ConsumerWidget {
             title: 'No completed swaps yet',
             subtitle: 'Complete your first swap to start building your reputation',
             ctaText: 'Start Your First Swap',
-            onCtaTap: () => const HomeRoute().go(context),
+            onCtaTap: () {
+              // Switch to Home tab (index 0) in the bottom navigation
+              ref.read(navigationIndexProvider.notifier).state = 0;
+            },
           );
         }
 

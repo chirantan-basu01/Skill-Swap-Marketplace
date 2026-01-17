@@ -13,9 +13,15 @@
 - [x] **Step 1.5: Swap Request Feature** - Swap repository, Matches screen with tabs, Swap request screen
 - [x] **Step 1.6: Chat Feature** - Chat list, Chat detail, Real-time messaging, Swap-chat integration
 - [x] **Step 1.7: Rating & Credits Feature** - Star rating, Rating tags, Rating screen, Wallet screen
-- [ ] **Step 1.8: Profile Feature** - 🔜 Next
+- [x] **Step 1.8: Profile Feature** - Profile screen, Edit profile, Settings with logout
 
-**Progress: Phase 1 - 87.5% complete (7/8 steps)**
+**Progress: Phase 1 - 100% complete (8/8 steps) ✅**
+
+### Recent Bug Fixes & Improvements
+- Fixed stale user data when switching accounts (providers now watch `authStateChangesProvider`)
+- Fixed "disposed during loading state" error with `isProfileCompleteProvider`
+- Fixed navigation buttons in Wallet screen ("Find a Swap Partner")
+- Fixed navigation buttons in Matches screen ("Find Someone to Swap With", "Browse Pending Requests")
 
 ---
 
@@ -123,14 +129,14 @@ Post-session rating and credit transfer.
 | ✅ | Transaction list widget | `lib/features/wallet/presentation/widgets/transaction_list.dart` |
 | ✅ | Wallet provider | `lib/features/wallet/presentation/providers/wallet_provider.dart` |
 
-### 🔜 Step 1.8: Profile Feature - UP NEXT
+### ✅ Step 1.8: Profile Feature - COMPLETED
 User's own profile management.
 
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Profile screen | `lib/features/profile/presentation/screens/profile_screen.dart` |
-| ⬜ | Edit profile screen | `lib/features/profile/presentation/screens/edit_profile_screen.dart` |
-| ⬜ | Settings screen (with logout) | `lib/features/profile/presentation/screens/settings_screen.dart` |
+| ✅ | Profile screen | `lib/features/profile/presentation/screens/profile_screen.dart` |
+| ✅ | Edit profile screen | `lib/features/profile/presentation/screens/edit_profile_screen.dart` |
+| ✅ | Settings screen (with logout) | `lib/features/profile/presentation/screens/settings_screen.dart` |
 
 ---
 
@@ -256,19 +262,19 @@ Week 1-2: Foundation Setup ✅ DONE
 
 Week 3-4: Profile & Home ✅ DONE
 ├── 1.4 Home & Discovery (main shell, user list) ✅
-└── Test: User can sign up and see other users
+└── Test: User can sign up and see other users ✅
 
 Week 5-6: Core Swap Flow ✅ DONE
 ├── 1.5 Swap Request (request, matches screen) ✅
 ├── 1.6 Chat (list, detail, real-time messages) ✅
 └── Test: Users can request swap and chat ✅
 
-Week 7-8: Complete MVP Loop 🔜 IN PROGRESS
-├── 1.7 Rating & Credits (rating screen, wallet)
-├── 1.8 Profile (view, edit, settings)
-└── Test: Full swap cycle works end-to-end
+Week 7-8: Complete MVP Loop ✅ DONE
+├── 1.7 Rating & Credits (rating screen, wallet) ✅
+├── 1.8 Profile (view, edit, settings) ✅
+└── Test: Full swap cycle works end-to-end ✅
 
-Week 9-10: Discovery Enhancement
+Week 9-10: Discovery Enhancement 🔜 UP NEXT
 ├── 2.1 Search & Filters
 ├── 2.2 Categories
 ├── 2.3 Match Algorithm
@@ -284,16 +290,18 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Step 1.8: Profile Feature** - 🔜 UP NEXT
-   - Build profile screen showing user's own profile
-   - Create edit profile screen
-   - Implement settings screen with logout
+1. **Phase 2: Discovery & UX** - 🔜 UP NEXT
+   - Step 2.1: Search & Filters (search screen, filter bottom sheet)
+   - Step 2.2: Categories (category screen, category grid)
+   - Step 2.3: Match Algorithm (match calculator, perfect match badge)
+   - Step 2.4: UX Polish (shimmer loading, empty states, error widgets)
 
-2. **Phase 2: Discovery & UX**
-   - Search & Filters
-   - Categories
-   - Match Algorithm
-   - UX Polish
+2. **Phase 3: Session Management**
+   - Schedule session screen with date/time picker
+   - Active session screen with timer
+   - Local notifications for reminders
+
+3. **Note**: ScheduleSessionRoute and ActiveSessionRoute exist but use placeholder screens
 
 ---
 
@@ -306,3 +314,6 @@ Week 11-12: Sessions & Safety
 | JSON Serialization | `explicit_to_json: true` in build.yaml | Nested objects serialize properly |
 | Form State | TextEditingController in StatefulWidget | Persists across navigation |
 | Firestore Constants | Single merged file | Removed duplicate `firestore_paths.dart` |
+| Bottom Navigation | `IndexedStack` + `navigationIndexProvider` | Preserves tab state; use provider (not go_router) for tab switching |
+| Auth State | Providers watch `authStateChangesProvider` | Ensures data refreshes on account switch |
+| FutureProvider | Never watch StreamProvider | Prevents "disposed during loading" race conditions |
