@@ -10,9 +10,10 @@
 - [x] **Step 1.2: Authentication** - Splash, Onboarding, Login, Signup screens with Email + Google
 - [x] **Step 1.3: Profile Setup** - 4-step wizard with modern UI
 - [x] **Step 1.4: Home & Discovery** - Main shell, Home screen, User cards, User profile view
-- [ ] **Step 1.5: Swap Request Feature** - 🔜 Next
+- [x] **Step 1.5: Swap Request Feature** - Swap repository, Matches screen with tabs, Swap request screen
+- [ ] **Step 1.6: Chat Feature** - 🔜 Next
 
-**Progress: Phase 1 - 50% complete (4/8 steps)**
+**Progress: Phase 1 - 62.5% complete (5/8 steps)**
 
 ---
 
@@ -78,20 +79,20 @@ Main app shell with bottom navigation.
 | ✅ | Users list provider | `lib/features/home/presentation/providers/users_provider.dart` |
 | ✅ | User profile view screen | `lib/features/user/presentation/screens/user_profile_view_screen.dart` |
 
-### 🔜 Step 1.5: Swap Request Feature - UP NEXT
+### ✅ Step 1.5: Swap Request Feature - COMPLETED
 Request and manage skill swaps.
 
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Swap repository interface | `lib/features/swap/domain/repositories/swap_repository.dart` |
-| ⬜ | Swap repository impl | `lib/features/swap/data/repositories/swap_repository_impl.dart` |
-| ⬜ | Swap request screen | `lib/features/swap/presentation/screens/swap_request_screen.dart` |
-| ⬜ | Matches screen (tabs) | `lib/features/swap/presentation/screens/matches_screen.dart` |
-| ⬜ | Swap card widget | `lib/features/swap/presentation/widgets/swap_card.dart` |
-| ⬜ | Swap status badge widget | `lib/features/swap/presentation/widgets/swap_status_badge.dart` |
-| ⬜ | Swaps provider | `lib/features/swap/presentation/providers/swaps_provider.dart` |
+| ✅ | Swap repository interface | `lib/features/swap/domain/repositories/swap_repository.dart` |
+| ✅ | Swap repository impl | `lib/features/swap/data/repositories/swap_repository_impl.dart` |
+| ✅ | Swap request screen | `lib/features/swap/presentation/screens/swap_request_screen.dart` |
+| ✅ | Matches screen (tabs) | `lib/features/swap/presentation/screens/matches_screen.dart` |
+| ✅ | Swap card widget | `lib/features/swap/presentation/widgets/swap_card.dart` |
+| ✅ | Swap status badge widget | `lib/features/swap/presentation/widgets/swap_status_badge.dart` |
+| ✅ | Swaps provider | `lib/features/swap/presentation/providers/swaps_provider.dart` |
 
-### ⬜ Step 1.6: Chat Feature
+### 🔜 Step 1.6: Chat Feature - UP NEXT
 Real-time messaging.
 
 | Status | Task | Files |
@@ -279,11 +280,11 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Step 1.5: Swap Request Feature**
-   - Create swap repository interface and implementation
-   - Build swap request screen with skill selection
-   - Implement matches screen with tabs (Pending/Active/Completed)
-   - Create swap card and status badge widgets
+1. **Step 1.6: Chat Feature**
+   - Create chat repository interface and implementation
+   - Build chat list screen showing conversation list
+   - Implement chat detail screen with real-time messaging
+   - Create message bubble and chat input widgets
 
 2. **Seed Test Data**
    - Add sample categories to Firestore

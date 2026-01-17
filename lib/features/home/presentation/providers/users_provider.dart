@@ -36,7 +36,7 @@ final usersProvider = StreamProvider<List<UserModel>>((ref) {
         final users = snapshot.docs
             .map((doc) => UserModel.fromJson(doc.data()))
             .where((user) =>
-                user.uid != currentAuthUser.uid && user.status == 'active')
+                user.uid != currentAuthUser.uid && user.status == UserStatus.active)
             .toList();
         // Sort by lastActiveAt client-side
         users.sort((a, b) => b.lastActiveAt.compareTo(a.lastActiveAt));

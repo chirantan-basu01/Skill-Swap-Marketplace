@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skill_swap_marketplace/core/shared/models/failure.dart';
 import 'package:skill_swap_marketplace/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/repositories/auth_repository.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
 
 part 'auth_provider.g.dart';
 
@@ -178,7 +179,14 @@ class AuthNotifier extends _$AuthNotifier {
         status: AuthStatus.error,
         error: failure,
       ),
-      (_) => state = const AuthState(status: AuthStatus.unauthenticated),
+      (_) {
+        // Invalidate user-dependent providers
+        ref.invalidate(currentUserProfileProvider);
+        ref.invalidate(isProfileCompleteProvider);
+        ref.read(profileSetupNotifierProvider.notifier).reset();
+
+        state = const AuthState(status: AuthStatus.unauthenticated);
+      },
     );
   }
 
