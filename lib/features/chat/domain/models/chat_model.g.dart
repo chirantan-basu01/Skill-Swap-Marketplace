@@ -44,6 +44,20 @@ const _$MessageTypeEnumMap = {
   MessageType.system: 'system',
 };
 
+_$SwapContextImpl _$$SwapContextImplFromJson(Map<String, dynamic> json) =>
+    _$SwapContextImpl(
+      offeredSkillName: json['offeredSkillName'] as String,
+      wantedSkillName: json['wantedSkillName'] as String,
+      status: json['status'] as String,
+    );
+
+Map<String, dynamic> _$$SwapContextImplToJson(_$SwapContextImpl instance) =>
+    <String, dynamic>{
+      'offeredSkillName': instance.offeredSkillName,
+      'wantedSkillName': instance.wantedSkillName,
+      'status': instance.status,
+    };
+
 _$ChatModelImpl _$$ChatModelImplFromJson(Map<String, dynamic> json) =>
     _$ChatModelImpl(
       id: json['id'] as String,
@@ -58,6 +72,9 @@ _$ChatModelImpl _$$ChatModelImplFromJson(Map<String, dynamic> json) =>
       lastMessage: json['lastMessage'] == null
           ? null
           : LastMessage.fromJson(json['lastMessage'] as Map<String, dynamic>),
+      swapContext: json['swapContext'] == null
+          ? null
+          : SwapContext.fromJson(json['swapContext'] as Map<String, dynamic>),
       unreadCount: (json['unreadCount'] as Map<String, dynamic>?)?.map(
             (k, e) => MapEntry(k, (e as num).toInt()),
           ) ??
@@ -76,6 +93,7 @@ Map<String, dynamic> _$$ChatModelImplToJson(_$ChatModelImpl instance) =>
           instance.participantInfo.map((k, e) => MapEntry(k, e.toJson())),
       'swapId': instance.swapId,
       'lastMessage': instance.lastMessage?.toJson(),
+      'swapContext': instance.swapContext?.toJson(),
       'unreadCount': instance.unreadCount,
       'createdAt': const TimestampConverterNonNull().toJson(instance.createdAt),
       'updatedAt': const TimestampConverterNonNull().toJson(instance.updatedAt),

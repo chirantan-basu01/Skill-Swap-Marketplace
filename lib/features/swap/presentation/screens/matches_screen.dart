@@ -4,6 +4,7 @@ import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
+import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/widgets/swap_card.dart';
@@ -210,14 +211,39 @@ class _PendingSwapsTab extends ConsumerWidget {
     );
 
     if (confirmed == true) {
-      final success = await ref.read(swapActionsNotifierProvider.notifier).acceptSwap(swapId);
+      final chatId = await ref.read(swapActionsNotifierProvider.notifier).acceptSwap(swapId);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success ? 'Swap request accepted!' : 'Failed to accept swap'),
-            backgroundColor: success ? AppColors.success : AppColors.error,
-          ),
-        );
+        if (chatId != null) {
+          // Show success dialog with option to chat
+          final goToChat = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Swap Accepted!'),
+              content: const Text('You can now chat with your swap partner to coordinate your session.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Later'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Start Chatting'),
+                ),
+              ],
+            ),
+          );
+
+          if (goToChat == true && context.mounted) {
+            ChatDetailRoute(chatId: chatId).push(context);
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Swap request accepted!'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
       }
     }
   }
@@ -327,9 +353,7 @@ class _ActiveSwapsTab extends ConsumerWidget {
                 swap: swap,
                 currentUserId: currentUserId,
                 onSchedule: () => ScheduleSessionRoute(swapId: swap.id).push(context),
-                onChat: () {
-                  // TODO: Navigate to chat in Step 1.6
-                },
+                onChat: () => _navigateToChat(context, ref, swap.id),
               )),
             ],
           ],
@@ -569,4 +593,21 @@ Future<bool?> _showConfirmDialog(
       ],
     ),
   );
+}
+
+/// Navigate to chat for a given swap
+Future<void> _navigateToChat(BuildContext context, WidgetRef ref, String swapId) async {
+  // Get the chat by swap ID
+  final chatAsync = await ref.read(chatBySwapIdProvider(swapId).future);
+
+  if (chatAsync != null && context.mounted) {
+    ChatDetailRoute(chatId: chatAsync.id).push(context);
+  } else if (context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Chat not found. Please try again.'),
+        backgroundColor: AppColors.error,
+      ),
+    );
+  }
 }

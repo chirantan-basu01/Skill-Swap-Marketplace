@@ -3,6 +3,7 @@ import 'package:skill_swap_marketplace/core/shared/models/failure.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
+import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
 import 'package:skill_swap_marketplace/features/skills/domain/models/skill_model.dart';
 import 'package:skill_swap_marketplace/features/swap/data/repositories/swap_repository_impl.dart';
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
@@ -266,19 +267,63 @@ class SwapActionsNotifier extends _$SwapActionsNotifier {
 
   SwapRepository get _swapRepo => ref.read(swapRepositoryProvider);
 
-  Future<bool> acceptSwap(String swapId) async {
+  /// Accept a swap request and create a chat for communication
+  /// Returns the chat ID if successful, null otherwise
+  Future<String?> acceptSwap(String swapId) async {
     state = const AsyncValue.loading();
 
-    final result = await _swapRepo.acceptSwap(swapId);
+    // First, get the swap details to know participants
+    final swapResult = await _swapRepo.getSwapById(swapId);
 
-    return result.fold(
+    return swapResult.fold(
       (failure) {
         state = AsyncValue.error(failure, StackTrace.current);
-        return false;
+        return null;
       },
-      (_) {
-        state = const AsyncValue.data(null);
-        return true;
+      (swap) async {
+        // Accept the swap
+        final acceptResult = await _swapRepo.acceptSwap(swapId);
+
+        return acceptResult.fold(
+          (failure) {
+            state = AsyncValue.error(failure, StackTrace.current);
+            return null;
+          },
+          (_) async {
+            // Create a chat for this swap
+            final chatRepo = ref.read(chatRepositoryProvider);
+            final chatResult = await chatRepo.getOrCreateChat(
+              swapId: swapId,
+              userId1: swap.requesterId,
+              userId2: swap.providerId,
+              user1Name: swap.requesterName,
+              user2Name: swap.providerName,
+              user1Photo: swap.requesterPhoto,
+              user2Photo: swap.providerPhoto,
+              offeredSkillName: swap.requesterOffers.skillName,
+              wantedSkillName: swap.requesterWants.skillName,
+            );
+
+            return chatResult.fold(
+              (failure) {
+                // Swap was accepted but chat creation failed
+                // Still return success for the swap, log the error
+                state = const AsyncValue.data(null);
+                return null;
+              },
+              (chat) {
+                // Send a system message about the swap being accepted
+                chatRepo.sendSystemMessage(
+                  chatId: chat.id,
+                  content: 'Swap request accepted! You can now chat and schedule your session.',
+                );
+
+                state = const AsyncValue.data(null);
+                return chat.id;
+              },
+            );
+          },
+        );
       },
     );
   }

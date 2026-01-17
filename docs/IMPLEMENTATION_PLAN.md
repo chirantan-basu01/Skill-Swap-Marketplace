@@ -11,9 +11,11 @@
 - [x] **Step 1.3: Profile Setup** - 4-step wizard with modern UI
 - [x] **Step 1.4: Home & Discovery** - Main shell, Home screen, User cards, User profile view
 - [x] **Step 1.5: Swap Request Feature** - Swap repository, Matches screen with tabs, Swap request screen
-- [ ] **Step 1.6: Chat Feature** - 🔜 Next
+- [x] **Step 1.6: Chat Feature** - Chat list, Chat detail, Real-time messaging, Swap-chat integration
+- [ ] **Step 1.7: Rating & Credits Feature** - 🔜 Next
+- [ ] **Step 1.8: Profile Feature**
 
-**Progress: Phase 1 - 62.5% complete (5/8 steps)**
+**Progress: Phase 1 - 75% complete (6/8 steps)**
 
 ---
 
@@ -92,21 +94,23 @@ Request and manage skill swaps.
 | ✅ | Swap status badge widget | `lib/features/swap/presentation/widgets/swap_status_badge.dart` |
 | ✅ | Swaps provider | `lib/features/swap/presentation/providers/swaps_provider.dart` |
 
-### 🔜 Step 1.6: Chat Feature - UP NEXT
-Real-time messaging.
+### ✅ Step 1.6: Chat Feature - COMPLETED
+Real-time messaging with swap integration.
 
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Chat repository interface | `lib/features/chat/domain/repositories/chat_repository.dart` |
-| ⬜ | Chat repository impl | `lib/features/chat/data/repositories/chat_repository_impl.dart` |
-| ⬜ | Chat list screen | `lib/features/chat/presentation/screens/chat_list_screen.dart` |
-| ⬜ | Chat detail screen | `lib/features/chat/presentation/screens/chat_detail_screen.dart` |
-| ⬜ | Message bubble widget | `lib/features/chat/presentation/widgets/message_bubble.dart` |
-| ⬜ | Chat input widget | `lib/features/chat/presentation/widgets/chat_input.dart` |
-| ⬜ | Chats provider | `lib/features/chat/presentation/providers/chats_provider.dart` |
-| ⬜ | Messages stream provider | `lib/features/chat/presentation/providers/messages_provider.dart` |
+| ✅ | Chat repository interface | `lib/features/chat/domain/repositories/chat_repository.dart` |
+| ✅ | Chat repository impl | `lib/features/chat/data/repositories/chat_repository_impl.dart` |
+| ✅ | Chat list screen | `lib/features/chat/presentation/screens/chat_list_screen.dart` |
+| ✅ | Chat detail screen | `lib/features/chat/presentation/screens/chat_detail_screen.dart` |
+| ✅ | Message bubble widget | `lib/features/chat/presentation/widgets/message_bubble.dart` |
+| ✅ | Chat input widget | `lib/features/chat/presentation/widgets/chat_input.dart` |
+| ✅ | Chat provider (combined) | `lib/features/chat/presentation/providers/chat_provider.dart` |
+| ✅ | Swap-chat integration | Auto-create chat on swap acceptance |
+| ✅ | Typing indicators | Real-time typing status |
+| ✅ | Online status | User active status display |
 
-### ⬜ Step 1.7: Rating & Credits Feature
+### 🔜 Step 1.7: Rating & Credits Feature - UP NEXT
 Post-session rating and credit transfer.
 
 | Status | Task | Files |
@@ -254,12 +258,12 @@ Week 3-4: Profile & Home ✅ DONE
 ├── 1.4 Home & Discovery (main shell, user list) ✅
 └── Test: User can sign up and see other users
 
-Week 5-6: Core Swap Flow
-├── 1.5 Swap Request (request, matches screen)
-├── 1.6 Chat (list, detail, real-time messages)
-└── Test: Users can request swap and chat
+Week 5-6: Core Swap Flow ✅ DONE
+├── 1.5 Swap Request (request, matches screen) ✅
+├── 1.6 Chat (list, detail, real-time messages) ✅
+└── Test: Users can request swap and chat ✅
 
-Week 7-8: Complete MVP Loop
+Week 7-8: Complete MVP Loop 🔜 IN PROGRESS
 ├── 1.7 Rating & Credits (rating screen, wallet)
 ├── 1.8 Profile (view, edit, settings)
 └── Test: Full swap cycle works end-to-end
@@ -280,15 +284,17 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Step 1.6: Chat Feature**
-   - Create chat repository interface and implementation
-   - Build chat list screen showing conversation list
-   - Implement chat detail screen with real-time messaging
-   - Create message bubble and chat input widgets
+1. **Step 1.7: Rating & Credits Feature**
+   - Create rating screen for post-session feedback
+   - Implement star rating and rating tags widgets
+   - Build wallet screen showing credit balance
+   - Create transaction list widget
+   - Implement credit transfer service
 
-2. **Seed Test Data**
-   - Add sample categories to Firestore
-   - Create test user profiles for discovery testing
+2. **Step 1.8: Profile Feature**
+   - Build profile screen showing user's own profile
+   - Create edit profile screen
+   - Implement settings screen with logout
 
 ---
 

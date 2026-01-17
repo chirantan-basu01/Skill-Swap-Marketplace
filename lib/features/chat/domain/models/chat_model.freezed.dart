@@ -403,6 +403,196 @@ abstract class _LastMessage implements LastMessage {
       throw _privateConstructorUsedError;
 }
 
+SwapContext _$SwapContextFromJson(Map<String, dynamic> json) {
+  return _SwapContext.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SwapContext {
+  String get offeredSkillName => throw _privateConstructorUsedError;
+  String get wantedSkillName => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+
+  /// Serializes this SwapContext to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SwapContext
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SwapContextCopyWith<SwapContext> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SwapContextCopyWith<$Res> {
+  factory $SwapContextCopyWith(
+          SwapContext value, $Res Function(SwapContext) then) =
+      _$SwapContextCopyWithImpl<$Res, SwapContext>;
+  @useResult
+  $Res call({String offeredSkillName, String wantedSkillName, String status});
+}
+
+/// @nodoc
+class _$SwapContextCopyWithImpl<$Res, $Val extends SwapContext>
+    implements $SwapContextCopyWith<$Res> {
+  _$SwapContextCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SwapContext
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? offeredSkillName = null,
+    Object? wantedSkillName = null,
+    Object? status = null,
+  }) {
+    return _then(_value.copyWith(
+      offeredSkillName: null == offeredSkillName
+          ? _value.offeredSkillName
+          : offeredSkillName // ignore: cast_nullable_to_non_nullable
+              as String,
+      wantedSkillName: null == wantedSkillName
+          ? _value.wantedSkillName
+          : wantedSkillName // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SwapContextImplCopyWith<$Res>
+    implements $SwapContextCopyWith<$Res> {
+  factory _$$SwapContextImplCopyWith(
+          _$SwapContextImpl value, $Res Function(_$SwapContextImpl) then) =
+      __$$SwapContextImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String offeredSkillName, String wantedSkillName, String status});
+}
+
+/// @nodoc
+class __$$SwapContextImplCopyWithImpl<$Res>
+    extends _$SwapContextCopyWithImpl<$Res, _$SwapContextImpl>
+    implements _$$SwapContextImplCopyWith<$Res> {
+  __$$SwapContextImplCopyWithImpl(
+      _$SwapContextImpl _value, $Res Function(_$SwapContextImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of SwapContext
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? offeredSkillName = null,
+    Object? wantedSkillName = null,
+    Object? status = null,
+  }) {
+    return _then(_$SwapContextImpl(
+      offeredSkillName: null == offeredSkillName
+          ? _value.offeredSkillName
+          : offeredSkillName // ignore: cast_nullable_to_non_nullable
+              as String,
+      wantedSkillName: null == wantedSkillName
+          ? _value.wantedSkillName
+          : wantedSkillName // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SwapContextImpl implements _SwapContext {
+  const _$SwapContextImpl(
+      {required this.offeredSkillName,
+      required this.wantedSkillName,
+      required this.status});
+
+  factory _$SwapContextImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SwapContextImplFromJson(json);
+
+  @override
+  final String offeredSkillName;
+  @override
+  final String wantedSkillName;
+  @override
+  final String status;
+
+  @override
+  String toString() {
+    return 'SwapContext(offeredSkillName: $offeredSkillName, wantedSkillName: $wantedSkillName, status: $status)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SwapContextImpl &&
+            (identical(other.offeredSkillName, offeredSkillName) ||
+                other.offeredSkillName == offeredSkillName) &&
+            (identical(other.wantedSkillName, wantedSkillName) ||
+                other.wantedSkillName == wantedSkillName) &&
+            (identical(other.status, status) || other.status == status));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, offeredSkillName, wantedSkillName, status);
+
+  /// Create a copy of SwapContext
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SwapContextImplCopyWith<_$SwapContextImpl> get copyWith =>
+      __$$SwapContextImplCopyWithImpl<_$SwapContextImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SwapContextImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SwapContext implements SwapContext {
+  const factory _SwapContext(
+      {required final String offeredSkillName,
+      required final String wantedSkillName,
+      required final String status}) = _$SwapContextImpl;
+
+  factory _SwapContext.fromJson(Map<String, dynamic> json) =
+      _$SwapContextImpl.fromJson;
+
+  @override
+  String get offeredSkillName;
+  @override
+  String get wantedSkillName;
+  @override
+  String get status;
+
+  /// Create a copy of SwapContext
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SwapContextImplCopyWith<_$SwapContextImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 ChatModel _$ChatModelFromJson(Map<String, dynamic> json) {
   return _ChatModel.fromJson(json);
 }
@@ -415,6 +605,7 @@ mixin _$ChatModel {
       throw _privateConstructorUsedError;
   String get swapId => throw _privateConstructorUsedError;
   LastMessage? get lastMessage => throw _privateConstructorUsedError;
+  SwapContext? get swapContext => throw _privateConstructorUsedError;
   Map<String, int> get unreadCount => throw _privateConstructorUsedError;
   @TimestampConverterNonNull()
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -442,11 +633,13 @@ abstract class $ChatModelCopyWith<$Res> {
       Map<String, ParticipantInfo> participantInfo,
       String swapId,
       LastMessage? lastMessage,
+      SwapContext? swapContext,
       Map<String, int> unreadCount,
       @TimestampConverterNonNull() DateTime createdAt,
       @TimestampConverterNonNull() DateTime updatedAt});
 
   $LastMessageCopyWith<$Res>? get lastMessage;
+  $SwapContextCopyWith<$Res>? get swapContext;
 }
 
 /// @nodoc
@@ -469,6 +662,7 @@ class _$ChatModelCopyWithImpl<$Res, $Val extends ChatModel>
     Object? participantInfo = null,
     Object? swapId = null,
     Object? lastMessage = freezed,
+    Object? swapContext = freezed,
     Object? unreadCount = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -494,6 +688,10 @@ class _$ChatModelCopyWithImpl<$Res, $Val extends ChatModel>
           ? _value.lastMessage
           : lastMessage // ignore: cast_nullable_to_non_nullable
               as LastMessage?,
+      swapContext: freezed == swapContext
+          ? _value.swapContext
+          : swapContext // ignore: cast_nullable_to_non_nullable
+              as SwapContext?,
       unreadCount: null == unreadCount
           ? _value.unreadCount
           : unreadCount // ignore: cast_nullable_to_non_nullable
@@ -522,6 +720,20 @@ class _$ChatModelCopyWithImpl<$Res, $Val extends ChatModel>
       return _then(_value.copyWith(lastMessage: value) as $Val);
     });
   }
+
+  /// Create a copy of ChatModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SwapContextCopyWith<$Res>? get swapContext {
+    if (_value.swapContext == null) {
+      return null;
+    }
+
+    return $SwapContextCopyWith<$Res>(_value.swapContext!, (value) {
+      return _then(_value.copyWith(swapContext: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -538,12 +750,15 @@ abstract class _$$ChatModelImplCopyWith<$Res>
       Map<String, ParticipantInfo> participantInfo,
       String swapId,
       LastMessage? lastMessage,
+      SwapContext? swapContext,
       Map<String, int> unreadCount,
       @TimestampConverterNonNull() DateTime createdAt,
       @TimestampConverterNonNull() DateTime updatedAt});
 
   @override
   $LastMessageCopyWith<$Res>? get lastMessage;
+  @override
+  $SwapContextCopyWith<$Res>? get swapContext;
 }
 
 /// @nodoc
@@ -564,6 +779,7 @@ class __$$ChatModelImplCopyWithImpl<$Res>
     Object? participantInfo = null,
     Object? swapId = null,
     Object? lastMessage = freezed,
+    Object? swapContext = freezed,
     Object? unreadCount = null,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -589,6 +805,10 @@ class __$$ChatModelImplCopyWithImpl<$Res>
           ? _value.lastMessage
           : lastMessage // ignore: cast_nullable_to_non_nullable
               as LastMessage?,
+      swapContext: freezed == swapContext
+          ? _value.swapContext
+          : swapContext // ignore: cast_nullable_to_non_nullable
+              as SwapContext?,
       unreadCount: null == unreadCount
           ? _value._unreadCount
           : unreadCount // ignore: cast_nullable_to_non_nullable
@@ -614,6 +834,7 @@ class _$ChatModelImpl implements _ChatModel {
       required final Map<String, ParticipantInfo> participantInfo,
       required this.swapId,
       this.lastMessage,
+      this.swapContext,
       final Map<String, int> unreadCount = const {},
       @TimestampConverterNonNull() required this.createdAt,
       @TimestampConverterNonNull() required this.updatedAt})
@@ -646,6 +867,8 @@ class _$ChatModelImpl implements _ChatModel {
   final String swapId;
   @override
   final LastMessage? lastMessage;
+  @override
+  final SwapContext? swapContext;
   final Map<String, int> _unreadCount;
   @override
   @JsonKey()
@@ -664,7 +887,7 @@ class _$ChatModelImpl implements _ChatModel {
 
   @override
   String toString() {
-    return 'ChatModel(id: $id, participants: $participants, participantInfo: $participantInfo, swapId: $swapId, lastMessage: $lastMessage, unreadCount: $unreadCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ChatModel(id: $id, participants: $participants, participantInfo: $participantInfo, swapId: $swapId, lastMessage: $lastMessage, swapContext: $swapContext, unreadCount: $unreadCount, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -680,6 +903,8 @@ class _$ChatModelImpl implements _ChatModel {
             (identical(other.swapId, swapId) || other.swapId == swapId) &&
             (identical(other.lastMessage, lastMessage) ||
                 other.lastMessage == lastMessage) &&
+            (identical(other.swapContext, swapContext) ||
+                other.swapContext == swapContext) &&
             const DeepCollectionEquality()
                 .equals(other._unreadCount, _unreadCount) &&
             (identical(other.createdAt, createdAt) ||
@@ -697,6 +922,7 @@ class _$ChatModelImpl implements _ChatModel {
       const DeepCollectionEquality().hash(_participantInfo),
       swapId,
       lastMessage,
+      swapContext,
       const DeepCollectionEquality().hash(_unreadCount),
       createdAt,
       updatedAt);
@@ -724,6 +950,7 @@ abstract class _ChatModel implements ChatModel {
           required final Map<String, ParticipantInfo> participantInfo,
           required final String swapId,
           final LastMessage? lastMessage,
+          final SwapContext? swapContext,
           final Map<String, int> unreadCount,
           @TimestampConverterNonNull() required final DateTime createdAt,
           @TimestampConverterNonNull() required final DateTime updatedAt}) =
@@ -742,6 +969,8 @@ abstract class _ChatModel implements ChatModel {
   String get swapId;
   @override
   LastMessage? get lastMessage;
+  @override
+  SwapContext? get swapContext;
   @override
   Map<String, int> get unreadCount;
   @override

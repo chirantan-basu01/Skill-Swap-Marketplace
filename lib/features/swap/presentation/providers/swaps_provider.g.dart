@@ -143,7 +143,7 @@ final swapRequestNotifierProvider =
 
 typedef _$SwapRequestNotifier = AutoDisposeNotifier<SwapRequestState>;
 String _$swapActionsNotifierHash() =>
-    r'779d7149fe7881610400eec98733951ee7fd93f2';
+    r'cff0918ea9dc6a544ac8e6179a2b839138f9ec2b';
 
 /// Swap actions notifier for managing swap status changes
 ///

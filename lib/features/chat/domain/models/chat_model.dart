@@ -41,6 +41,19 @@ class LastMessage with _$LastMessage {
       _$LastMessageFromJson(json);
 }
 
+/// Swap context info for chat display
+@freezed
+class SwapContext with _$SwapContext {
+  const factory SwapContext({
+    required String offeredSkillName,
+    required String wantedSkillName,
+    required String status,
+  }) = _SwapContext;
+
+  factory SwapContext.fromJson(Map<String, dynamic> json) =>
+      _$SwapContextFromJson(json);
+}
+
 /// Chat model representing a conversation between two users
 @freezed
 class ChatModel with _$ChatModel {
@@ -50,6 +63,7 @@ class ChatModel with _$ChatModel {
     required Map<String, ParticipantInfo> participantInfo,
     required String swapId,
     LastMessage? lastMessage,
+    SwapContext? swapContext,
     @Default({}) Map<String, int> unreadCount,
     @TimestampConverterNonNull() required DateTime createdAt,
     @TimestampConverterNonNull() required DateTime updatedAt,

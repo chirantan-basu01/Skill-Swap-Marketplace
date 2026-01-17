@@ -7,9 +7,13 @@ import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
 import 'package:skill_swap_marketplace/core/constants/firestore_constants.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
+import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
 import 'package:skill_swap_marketplace/features/home/presentation/providers/users_provider.dart';
 import 'package:skill_swap_marketplace/features/skills/domain/models/skill_model.dart';
+import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
+import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 
 /// Provider for fetching a user by ID
 final userByIdProvider =
@@ -127,7 +131,7 @@ class UserProfileViewScreen extends ConsumerWidget {
               _buildStatsRow(user),
 
               // Action Buttons
-              _buildActionButtons(context, user),
+              _buildActionButtons(context, ref, user),
 
               // Match Indicator
               if (matchInfo != null && matchInfo.matchPercentage > 0)
@@ -256,7 +260,7 @@ class UserProfileViewScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, UserModel user) {
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref, UserModel user) {
     return Padding(
       padding: const EdgeInsets.all(Dimensions.screenPaddingH),
       child: Column(
@@ -287,9 +291,7 @@ class UserProfileViewScreen extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {
-                // Navigate to or create chat
-              },
+              onPressed: () => _handleSendMessage(context, ref, user),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: AppColors.primaryBlue, width: 1.5),
@@ -309,6 +311,134 @@ class UserProfileViewScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  /// Handle sending a message - find or create chat with the user
+  Future<void> _handleSendMessage(
+    BuildContext context,
+    WidgetRef ref,
+    UserModel otherUser,
+  ) async {
+    final currentUserId = ref.read(authRepositoryProvider).currentUser?.uid;
+    if (currentUserId == null) return;
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryBlue),
+      ),
+    );
+
+    try {
+      // First, try to find an existing accepted swap between the users
+      final swapsAsync = await ref.read(userSwapsProvider.future);
+
+      // Find a swap where both users are participants and status is accepted or beyond
+      final existingSwap = swapsAsync.where((swap) {
+        final isParticipant = (swap.requesterId == currentUserId && swap.providerId == otherUser.uid) ||
+            (swap.providerId == currentUserId && swap.requesterId == otherUser.uid);
+        final hasActiveStatus = swap.status == SwapStatus.accepted ||
+            swap.status == SwapStatus.scheduled ||
+            swap.status == SwapStatus.inProgress;
+        return isParticipant && hasActiveStatus;
+      }).toList();
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Close loading dialog
+
+      if (existingSwap.isNotEmpty) {
+        // Try to find existing chat for this swap
+        final swap = existingSwap.first;
+        final chatResult = await ref.read(chatRepositoryProvider).getChatBySwapId(swap.id);
+
+        chatResult.fold(
+          (failure) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error: ${failure.message}'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+            }
+          },
+          (chat) async {
+            if (chat != null && context.mounted) {
+              // Chat exists, navigate to it
+              ChatDetailRoute(chatId: chat.id).push(context);
+            } else {
+              // Chat doesn't exist, create it
+              final currentUser = ref.read(currentUserProfileProvider).valueOrNull;
+              if (currentUser == null) return;
+
+              final createResult = await ref.read(chatRepositoryProvider).getOrCreateChat(
+                swapId: swap.id,
+                userId1: currentUserId,
+                userId2: otherUser.uid,
+                user1Name: currentUser.displayName,
+                user2Name: otherUser.displayName,
+                user1Photo: currentUser.photoUrl,
+                user2Photo: otherUser.photoUrl,
+              );
+
+              createResult.fold(
+                (failure) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: ${failure.message}'),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                },
+                (newChat) {
+                  if (context.mounted) {
+                    ChatDetailRoute(chatId: newChat.id).push(context);
+                  }
+                },
+              );
+            }
+          },
+        );
+      } else {
+        // No accepted swap exists, show dialog prompting to request swap
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('No Active Swap'),
+            content: const Text(
+              'You need to have an accepted swap with this user to start chatting. Would you like to request a swap?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  SwapRequestRoute(userId: otherUser.uid).push(context);
+                },
+                child: const Text('Request Swap'),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading dialog if still open
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildMatchIndicator(_MatchInfo matchInfo) {
