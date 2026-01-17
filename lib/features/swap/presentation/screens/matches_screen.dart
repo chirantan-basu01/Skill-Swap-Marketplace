@@ -195,10 +195,10 @@ class _PendingSwapsTab extends ConsumerWidget {
           );
         },
         loading: () => _buildLoading(),
-        error: (_, __) => _buildError(),
+        error: (e, s) => _buildError(e, s),
       ),
       loading: () => _buildLoading(),
-      error: (_, __) => _buildError(),
+      error: (e, s) => _buildError(e, s),
     );
   }
 
@@ -319,6 +319,8 @@ class _ActiveSwapsTab extends ConsumerWidget {
                 swap: swap,
                 currentUserId: currentUserId,
                 onTap: () => ActiveSessionRoute(swapId: swap.id).push(context),
+                onChat: () => _navigateToChat(context, ref, swap.id),
+                onComplete: () => _completeSwap(context, ref, swap.id),
               )),
               const SizedBox(height: Dimensions.lg),
             ],
@@ -336,6 +338,8 @@ class _ActiveSwapsTab extends ConsumerWidget {
                 swap: swap,
                 currentUserId: currentUserId,
                 onTap: () => ActiveSessionRoute(swapId: swap.id).push(context),
+                onChat: () => _navigateToChat(context, ref, swap.id),
+                onComplete: () => _completeSwap(context, ref, swap.id),
               )),
               const SizedBox(height: Dimensions.lg),
             ],
@@ -360,7 +364,7 @@ class _ActiveSwapsTab extends ConsumerWidget {
         );
       },
       loading: () => _buildLoading(),
-      error: (_, __) => _buildError(),
+      error: (e, s) => _buildError(e, s),
     );
   }
 }
@@ -392,22 +396,26 @@ class _CompletedSwapsTab extends ConsumerWidget {
           itemCount: swaps.length,
           itemBuilder: (context, index) {
             final swap = swaps[index];
+            // Check if user has rated using the swap's ratings map
+            final hasRated = swap.ratings.containsKey(currentUserId);
+
             return SwapCard(
               swap: swap,
               currentUserId: currentUserId,
               onTap: () {
-                // Check if user has rated
-                final hasRated = swap.ratings.containsKey(currentUserId);
                 if (!hasRated) {
                   RatingRoute(swapId: swap.id).push(context);
                 }
               },
+              onRate: !hasRated
+                  ? () => RatingRoute(swapId: swap.id).push(context)
+                  : null,
             );
           },
         );
       },
       loading: () => _buildLoading(),
-      error: (_, __) => _buildError(),
+      error: (e, s) => _buildError(e, s),
     );
   }
 }
@@ -542,26 +550,49 @@ Widget _buildLoading() {
   );
 }
 
-Widget _buildError() {
-  return const Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.error_outline_rounded,
-          size: 48,
-          color: AppColors.error,
-        ),
-        SizedBox(height: Dimensions.md),
-        Text(
-          'Something went wrong',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+Widget _buildError([Object? error, StackTrace? stack]) {
+  // Print error for debugging
+  if (error != null) {
+    // ignore: avoid_print
+    print('Swaps Error: $error');
+    if (stack != null) {
+      // ignore: avoid_print
+      print('Stack: $stack');
+    }
+  }
+  return Center(
+    child: Padding(
+      padding: const EdgeInsets.all(Dimensions.lg),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.error_outline_rounded,
+            size: 48,
+            color: AppColors.error,
           ),
-        ),
-      ],
+          const SizedBox(height: Dimensions.md),
+          const Text(
+            'Something went wrong',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          if (error != null) ...[
+            const SizedBox(height: Dimensions.sm),
+            Text(
+              error.toString(),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
     ),
   );
 }
@@ -609,5 +640,32 @@ Future<void> _navigateToChat(BuildContext context, WidgetRef ref, String swapId)
         backgroundColor: AppColors.error,
       ),
     );
+  }
+}
+
+/// Complete a swap session
+Future<void> _completeSwap(BuildContext context, WidgetRef ref, String swapId) async {
+  final confirmed = await _showConfirmDialog(
+    context,
+    'Complete Swap Session',
+    'Mark this swap session as complete? Both users will need to rate the session afterward.',
+    'Complete',
+  );
+
+  if (confirmed == true) {
+    final success = await ref.read(swapActionsNotifierProvider.notifier).completeSwap(swapId);
+    if (context.mounted) {
+      if (success) {
+        // Navigate to rating screen
+        RatingRoute(swapId: swapId).push(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to complete swap. Please try again.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 }

@@ -89,3 +89,26 @@ class RouteName {
   static const String notifications = 'notifications';
   static const String report = 'report';
 }
+
+/// Route paths for navigation (use with context.go())
+class RouteNames {
+  RouteNames._();
+
+  // Main tabs
+  static const String home = '/home';
+  static const String matches = '/matches';
+  static const String chatList = '/chats';
+  static const String wallet = '/wallet';
+  static const String profile = '/profile';
+
+  // Auth
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String onboarding = '/onboarding';
+
+  // Other screens
+  static String chatDetail(String chatId) => '/chat/$chatId';
+  static String swapRequest(String userId) => '/swap-request/$userId';
+  static String rating(String swapId) => '/rating/$swapId';
+  static String userProfile(String userId) => '/user/$userId';
+}

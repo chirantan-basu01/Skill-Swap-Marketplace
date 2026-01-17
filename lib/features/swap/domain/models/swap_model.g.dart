@@ -8,28 +8,25 @@ part of 'swap_model.dart';
 
 _$SwapSessionImpl _$$SwapSessionImplFromJson(Map<String, dynamic> json) =>
     _$SwapSessionImpl(
-      scheduledDate: const TimestampConverterNonNull()
-          .fromJson(json['scheduledDate'] as Timestamp),
-      scheduledTime: json['scheduledTime'] as String,
+      scheduledDate:
+          timestampToDateTimeNonNull(readTimestampValue(json, 'scheduledDate')),
+      scheduledTime: json['scheduledTime'] as String? ?? '',
       videoLink: json['videoLink'] as String? ?? '',
-      actualStartTime: const TimestampConverter()
-          .fromJson(json['actualStartTime'] as Timestamp?),
-      actualEndTime: const TimestampConverter()
-          .fromJson(json['actualEndTime'] as Timestamp?),
+      actualStartTime:
+          timestampToDateTime(readTimestampValue(json, 'actualStartTime')),
+      actualEndTime:
+          timestampToDateTime(readTimestampValue(json, 'actualEndTime')),
       requesterStarted: json['requesterStarted'] as bool? ?? false,
       providerStarted: json['providerStarted'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$SwapSessionImplToJson(_$SwapSessionImpl instance) =>
     <String, dynamic>{
-      'scheduledDate':
-          const TimestampConverterNonNull().toJson(instance.scheduledDate),
+      'scheduledDate': dateTimeToTimestampNonNull(instance.scheduledDate),
       'scheduledTime': instance.scheduledTime,
       'videoLink': instance.videoLink,
-      'actualStartTime':
-          const TimestampConverter().toJson(instance.actualStartTime),
-      'actualEndTime':
-          const TimestampConverter().toJson(instance.actualEndTime),
+      'actualStartTime': dateTimeToTimestamp(instance.actualStartTime),
+      'actualEndTime': dateTimeToTimestamp(instance.actualEndTime),
       'requesterStarted': instance.requesterStarted,
       'providerStarted': instance.providerStarted,
     };
@@ -42,8 +39,8 @@ _$SwapRatingImpl _$$SwapRatingImplFromJson(Map<String, dynamic> json) =>
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               const [],
       review: json['review'] as String? ?? '',
-      createdAt: const TimestampConverterNonNull()
-          .fromJson(json['createdAt'] as Timestamp),
+      createdAt:
+          timestampToDateTimeNonNull(readTimestampValue(json, 'createdAt')),
     );
 
 Map<String, dynamic> _$$SwapRatingImplToJson(_$SwapRatingImpl instance) =>
@@ -52,7 +49,7 @@ Map<String, dynamic> _$$SwapRatingImplToJson(_$SwapRatingImpl instance) =>
       'stars': instance.stars,
       'tags': instance.tags,
       'review': instance.review,
-      'createdAt': const TimestampConverterNonNull().toJson(instance.createdAt),
+      'createdAt': dateTimeToTimestampNonNull(instance.createdAt),
     };
 
 _$SwapModelImpl _$$SwapModelImplFromJson(Map<String, dynamic> json) =>
@@ -81,12 +78,11 @@ _$SwapModelImpl _$$SwapModelImplFromJson(Map<String, dynamic> json) =>
                 MapEntry(k, SwapRating.fromJson(e as Map<String, dynamic>)),
           ) ??
           const {},
-      createdAt: const TimestampConverterNonNull()
-          .fromJson(json['createdAt'] as Timestamp),
-      updatedAt: const TimestampConverterNonNull()
-          .fromJson(json['updatedAt'] as Timestamp),
-      completedAt: const TimestampConverter()
-          .fromJson(json['completedAt'] as Timestamp?),
+      createdAt:
+          timestampToDateTimeNonNull(readTimestampValue(json, 'createdAt')),
+      updatedAt:
+          timestampToDateTimeNonNull(readTimestampValue(json, 'updatedAt')),
+      completedAt: timestampToDateTime(readTimestampValue(json, 'completedAt')),
       cancelledBy: json['cancelledBy'] as String?,
       cancelReason: json['cancelReason'] as String?,
     );
@@ -108,9 +104,9 @@ Map<String, dynamic> _$$SwapModelImplToJson(_$SwapModelImpl instance) =>
       'status': _$SwapStatusEnumMap[instance.status]!,
       'session': instance.session?.toJson(),
       'ratings': instance.ratings.map((k, e) => MapEntry(k, e.toJson())),
-      'createdAt': const TimestampConverterNonNull().toJson(instance.createdAt),
-      'updatedAt': const TimestampConverterNonNull().toJson(instance.updatedAt),
-      'completedAt': const TimestampConverter().toJson(instance.completedAt),
+      'createdAt': dateTimeToTimestampNonNull(instance.createdAt),
+      'updatedAt': dateTimeToTimestampNonNull(instance.updatedAt),
+      'completedAt': dateTimeToTimestamp(instance.completedAt),
       'cancelledBy': instance.cancelledBy,
       'cancelReason': instance.cancelReason,
     };

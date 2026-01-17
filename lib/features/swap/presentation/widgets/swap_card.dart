@@ -14,6 +14,8 @@ class SwapCard extends StatelessWidget {
   final VoidCallback? onDecline;
   final VoidCallback? onSchedule;
   final VoidCallback? onChat;
+  final VoidCallback? onComplete;
+  final VoidCallback? onRate;
   final bool showNewBadge;
 
   const SwapCard({
@@ -25,6 +27,8 @@ class SwapCard extends StatelessWidget {
     this.onDecline,
     this.onSchedule,
     this.onChat,
+    this.onComplete,
+    this.onRate,
     this.showNewBadge = true,
   });
 
@@ -333,6 +337,9 @@ class SwapCard extends StatelessWidget {
   bool _shouldShowActions() {
     if (swap.status == SwapStatus.pending && isProvider) return true;
     if (swap.status == SwapStatus.accepted) return true;
+    if (swap.status == SwapStatus.scheduled) return true;
+    if (swap.status == SwapStatus.inProgress) return true;
+    if (swap.status == SwapStatus.completed) return true;
     return false;
   }
 
@@ -391,6 +398,85 @@ class SwapCard extends StatelessWidget {
             ),
           ),
         ],
+      );
+    }
+
+    // Scheduled or In Progress - show Complete button
+    if (swap.status == SwapStatus.scheduled ||
+        swap.status == SwapStatus.inProgress) {
+      return Row(
+        children: [
+          if (onChat != null)
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: onChat,
+                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                label: const Text('Chat'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          if (onChat != null) const SizedBox(width: Dimensions.sm),
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: onComplete,
+              icon: const Icon(Icons.check_circle_outline, size: 18),
+              label: const Text('Complete'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.success,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Completed - show Rate button (if not yet rated by current user)
+    if (swap.status == SwapStatus.completed) {
+      // Check if current user has already rated
+      final hasRated = swap.ratings.containsKey(currentUserId);
+
+      if (hasRated) {
+        return Container(
+          padding: const EdgeInsets.all(Dimensions.sm),
+          decoration: BoxDecoration(
+            color: AppColors.gray100,
+            borderRadius: BorderRadius.circular(Dimensions.radiusSm),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                size: 18,
+                color: AppColors.success,
+              ),
+              const SizedBox(width: Dimensions.xs),
+              const Text(
+                'You rated this swap',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: onRate,
+          icon: const Icon(Icons.star_outline, size: 18),
+          label: const Text('Rate Session'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryBlue,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+          ),
+        ),
       );
     }
 

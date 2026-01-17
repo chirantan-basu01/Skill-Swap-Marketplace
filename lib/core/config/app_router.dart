@@ -12,9 +12,11 @@ import 'package:skill_swap_marketplace/features/profile/presentation/screens/set
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_basic_info_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_skills_offered_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/setup_skills_wanted_screen.dart';
+import 'package:skill_swap_marketplace/features/rating/presentation/screens/rating_screen.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/screens/matches_screen.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/screens/swap_request_screen.dart';
 import 'package:skill_swap_marketplace/features/user/presentation/screens/user_profile_view_screen.dart';
+import 'package:skill_swap_marketplace/features/wallet/presentation/screens/wallet_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -200,7 +202,7 @@ class RatingRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return _PlaceholderScreen(title: 'Rating: $swapId');
+    return RatingScreen(swapId: swapId);
   }
 }
 
@@ -240,7 +242,7 @@ class WalletRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Wallet');
+    return const WalletScreen();
   }
 }
 

@@ -20,13 +20,22 @@ SwapSession _$SwapSessionFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SwapSession {
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get scheduledDate => throw _privateConstructorUsedError;
   String get scheduledTime => throw _privateConstructorUsedError;
   String get videoLink => throw _privateConstructorUsedError;
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   DateTime? get actualStartTime => throw _privateConstructorUsedError;
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   DateTime? get actualEndTime => throw _privateConstructorUsedError;
   bool get requesterStarted => throw _privateConstructorUsedError;
   bool get providerStarted => throw _privateConstructorUsedError;
@@ -48,11 +57,23 @@ abstract class $SwapSessionCopyWith<$Res> {
       _$SwapSessionCopyWithImpl<$Res, SwapSession>;
   @useResult
   $Res call(
-      {@TimestampConverterNonNull() DateTime scheduledDate,
+      {@JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime scheduledDate,
       String scheduledTime,
       String videoLink,
-      @TimestampConverter() DateTime? actualStartTime,
-      @TimestampConverter() DateTime? actualEndTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      DateTime? actualStartTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      DateTime? actualEndTime,
       bool requesterStarted,
       bool providerStarted});
 }
@@ -122,11 +143,23 @@ abstract class _$$SwapSessionImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@TimestampConverterNonNull() DateTime scheduledDate,
+      {@JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime scheduledDate,
       String scheduledTime,
       String videoLink,
-      @TimestampConverter() DateTime? actualStartTime,
-      @TimestampConverter() DateTime? actualEndTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      DateTime? actualStartTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      DateTime? actualEndTime,
       bool requesterStarted,
       bool providerStarted});
 }
@@ -189,11 +222,23 @@ class __$$SwapSessionImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SwapSessionImpl implements _SwapSession {
   const _$SwapSessionImpl(
-      {@TimestampConverterNonNull() required this.scheduledDate,
-      required this.scheduledTime,
+      {@JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required this.scheduledDate,
+      this.scheduledTime = '',
       this.videoLink = '',
-      @TimestampConverter() this.actualStartTime,
-      @TimestampConverter() this.actualEndTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      this.actualStartTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      this.actualEndTime,
       this.requesterStarted = false,
       this.providerStarted = false});
 
@@ -201,18 +246,28 @@ class _$SwapSessionImpl implements _SwapSession {
       _$$SwapSessionImplFromJson(json);
 
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   final DateTime scheduledDate;
   @override
+  @JsonKey()
   final String scheduledTime;
   @override
   @JsonKey()
   final String videoLink;
   @override
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   final DateTime? actualStartTime;
   @override
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   final DateTime? actualEndTime;
   @override
   @JsonKey()
@@ -277,11 +332,23 @@ class _$SwapSessionImpl implements _SwapSession {
 
 abstract class _SwapSession implements SwapSession {
   const factory _SwapSession(
-      {@TimestampConverterNonNull() required final DateTime scheduledDate,
-      required final String scheduledTime,
+      {@JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required final DateTime scheduledDate,
+      final String scheduledTime,
       final String videoLink,
-      @TimestampConverter() final DateTime? actualStartTime,
-      @TimestampConverter() final DateTime? actualEndTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      final DateTime? actualStartTime,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      final DateTime? actualEndTime,
       final bool requesterStarted,
       final bool providerStarted}) = _$SwapSessionImpl;
 
@@ -289,17 +356,26 @@ abstract class _SwapSession implements SwapSession {
       _$SwapSessionImpl.fromJson;
 
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get scheduledDate;
   @override
   String get scheduledTime;
   @override
   String get videoLink;
   @override
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   DateTime? get actualStartTime;
   @override
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   DateTime? get actualEndTime;
   @override
   bool get requesterStarted;
@@ -324,7 +400,10 @@ mixin _$SwapRating {
   int get stars => throw _privateConstructorUsedError;
   List<String> get tags => throw _privateConstructorUsedError;
   String get review => throw _privateConstructorUsedError;
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this SwapRating to a JSON map.
@@ -348,7 +427,11 @@ abstract class $SwapRatingCopyWith<$Res> {
       int stars,
       List<String> tags,
       String review,
-      @TimestampConverterNonNull() DateTime createdAt});
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -410,7 +493,11 @@ abstract class _$$SwapRatingImplCopyWith<$Res>
       int stars,
       List<String> tags,
       String review,
-      @TimestampConverterNonNull() DateTime createdAt});
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime createdAt});
 }
 
 /// @nodoc
@@ -465,7 +552,11 @@ class _$SwapRatingImpl implements _SwapRating {
       required this.stars,
       final List<String> tags = const [],
       this.review = '',
-      @TimestampConverterNonNull() required this.createdAt})
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required this.createdAt})
       : _tags = tags;
 
   factory _$SwapRatingImpl.fromJson(Map<String, dynamic> json) =>
@@ -488,7 +579,10 @@ class _$SwapRatingImpl implements _SwapRating {
   @JsonKey()
   final String review;
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   final DateTime createdAt;
 
   @override
@@ -532,12 +626,15 @@ class _$SwapRatingImpl implements _SwapRating {
 
 abstract class _SwapRating implements SwapRating {
   const factory _SwapRating(
-          {required final String oderId,
-          required final int stars,
-          final List<String> tags,
-          final String review,
-          @TimestampConverterNonNull() required final DateTime createdAt}) =
-      _$SwapRatingImpl;
+      {required final String oderId,
+      required final int stars,
+      final List<String> tags,
+      final String review,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required final DateTime createdAt}) = _$SwapRatingImpl;
 
   factory _SwapRating.fromJson(Map<String, dynamic> json) =
       _$SwapRatingImpl.fromJson;
@@ -551,7 +648,10 @@ abstract class _SwapRating implements SwapRating {
   @override
   String get review;
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get createdAt;
 
   /// Create a copy of SwapRating
@@ -589,11 +689,20 @@ mixin _$SwapModel {
       throw _privateConstructorUsedError; // Ratings (after completion)
   Map<String, SwapRating> get ratings =>
       throw _privateConstructorUsedError; // Metadata
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get createdAt => throw _privateConstructorUsedError;
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get updatedAt => throw _privateConstructorUsedError;
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   DateTime? get completedAt => throw _privateConstructorUsedError;
   String? get cancelledBy => throw _privateConstructorUsedError;
   String? get cancelReason => throw _privateConstructorUsedError;
@@ -629,9 +738,21 @@ abstract class $SwapModelCopyWith<$Res> {
       SwapStatus status,
       SwapSession? session,
       Map<String, SwapRating> ratings,
-      @TimestampConverterNonNull() DateTime createdAt,
-      @TimestampConverterNonNull() DateTime updatedAt,
-      @TimestampConverter() DateTime? completedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime createdAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime updatedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      DateTime? completedAt,
       String? cancelledBy,
       String? cancelReason});
 
@@ -819,9 +940,21 @@ abstract class _$$SwapModelImplCopyWith<$Res>
       SwapStatus status,
       SwapSession? session,
       Map<String, SwapRating> ratings,
-      @TimestampConverterNonNull() DateTime createdAt,
-      @TimestampConverterNonNull() DateTime updatedAt,
-      @TimestampConverter() DateTime? completedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime createdAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      DateTime updatedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      DateTime? completedAt,
       String? cancelledBy,
       String? cancelReason});
 
@@ -971,9 +1104,21 @@ class _$SwapModelImpl implements _SwapModel {
       this.status = SwapStatus.pending,
       this.session,
       final Map<String, SwapRating> ratings = const {},
-      @TimestampConverterNonNull() required this.createdAt,
-      @TimestampConverterNonNull() required this.updatedAt,
-      @TimestampConverter() this.completedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required this.createdAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required this.updatedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      this.completedAt,
       this.cancelledBy,
       this.cancelReason})
       : _ratings = ratings;
@@ -1030,13 +1175,22 @@ class _$SwapModelImpl implements _SwapModel {
 
 // Metadata
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   final DateTime createdAt;
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   final DateTime updatedAt;
   @override
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   final DateTime? completedAt;
   @override
   final String? cancelledBy;
@@ -1149,9 +1303,21 @@ abstract class _SwapModel implements SwapModel {
       final SwapStatus status,
       final SwapSession? session,
       final Map<String, SwapRating> ratings,
-      @TimestampConverterNonNull() required final DateTime createdAt,
-      @TimestampConverterNonNull() required final DateTime updatedAt,
-      @TimestampConverter() final DateTime? completedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required final DateTime createdAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTimeNonNull,
+          toJson: dateTimeToTimestampNonNull)
+      required final DateTime updatedAt,
+      @JsonKey(
+          readValue: readTimestampValue,
+          fromJson: timestampToDateTime,
+          toJson: dateTimeToTimestamp)
+      final DateTime? completedAt,
       final String? cancelledBy,
       final String? cancelReason}) = _$SwapModelImpl;
 
@@ -1189,13 +1355,22 @@ abstract class _SwapModel implements SwapModel {
   @override
   Map<String, SwapRating> get ratings; // Metadata
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get createdAt;
   @override
-  @TimestampConverterNonNull()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull)
   DateTime get updatedAt;
   @override
-  @TimestampConverter()
+  @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp)
   DateTime? get completedAt;
   @override
   String? get cancelledBy;

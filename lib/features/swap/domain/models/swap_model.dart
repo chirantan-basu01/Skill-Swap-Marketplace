@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:skill_swap_marketplace/core/utils/timestamp_converter.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
 import 'package:skill_swap_marketplace/features/skills/domain/models/skill_model.dart';
 
@@ -28,11 +29,26 @@ enum SwapStatus {
 @freezed
 class SwapSession with _$SwapSession {
   const factory SwapSession({
-    @TimestampConverterNonNull() required DateTime scheduledDate,
-    required String scheduledTime,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull,
+    )
+    required DateTime scheduledDate,
+    @Default('') String scheduledTime,
     @Default('') String videoLink,
-    @TimestampConverter() DateTime? actualStartTime,
-    @TimestampConverter() DateTime? actualEndTime,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp,
+    )
+    DateTime? actualStartTime,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp,
+    )
+    DateTime? actualEndTime,
     @Default(false) bool requesterStarted,
     @Default(false) bool providerStarted,
   }) = _SwapSession;
@@ -49,7 +65,12 @@ class SwapRating with _$SwapRating {
     required int stars,
     @Default([]) List<String> tags,
     @Default('') String review,
-    @TimestampConverterNonNull() required DateTime createdAt,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull,
+    )
+    required DateTime createdAt,
   }) = _SwapRating;
 
   factory SwapRating.fromJson(Map<String, dynamic> json) =>
@@ -89,9 +110,24 @@ class SwapModel with _$SwapModel {
     @Default({}) Map<String, SwapRating> ratings,
 
     // Metadata
-    @TimestampConverterNonNull() required DateTime createdAt,
-    @TimestampConverterNonNull() required DateTime updatedAt,
-    @TimestampConverter() DateTime? completedAt,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull,
+    )
+    required DateTime createdAt,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTimeNonNull,
+      toJson: dateTimeToTimestampNonNull,
+    )
+    required DateTime updatedAt,
+    @JsonKey(
+      readValue: readTimestampValue,
+      fromJson: timestampToDateTime,
+      toJson: dateTimeToTimestamp,
+    )
+    DateTime? completedAt,
     String? cancelledBy,
     String? cancelReason,
   }) = _SwapModel;
