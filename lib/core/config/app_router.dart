@@ -19,6 +19,7 @@ import 'package:skill_swap_marketplace/features/user/presentation/screens/user_p
 import 'package:skill_swap_marketplace/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/settings_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:skill_swap_marketplace/features/search/presentation/screens/search_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -130,7 +131,7 @@ class SearchRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Search');
+    return const SearchScreen();
   }
 }
 

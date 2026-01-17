@@ -143,13 +143,13 @@ User's own profile management.
 ## Phase 2: Discovery & UX
 **Goal**: Enhanced findability and polished user experience.
 
-### ⬜ Step 2.1: Search & Filters
+### ✅ Step 2.1: Search & Filters - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Search screen | `lib/features/search/presentation/screens/search_screen.dart` |
-| ⬜ | Search provider with debounce | `lib/features/search/presentation/providers/search_provider.dart` |
-| ⬜ | Filter bottom sheet | `lib/features/search/presentation/widgets/filter_sheet.dart` |
-| ⬜ | Sort options | `lib/features/search/presentation/widgets/sort_options.dart` |
+| ✅ | Search screen | `lib/features/search/presentation/screens/search_screen.dart` |
+| ✅ | Search provider with debounce | `lib/features/search/presentation/providers/search_provider.dart` |
+| ✅ | Filter bottom sheet | `lib/features/search/presentation/widgets/filter_sheet.dart` |
+| ✅ | Sort options | `lib/features/search/presentation/widgets/sort_options.dart` |
 
 ### ⬜ Step 2.2: Categories
 | Status | Task | Files |
@@ -274,8 +274,8 @@ Week 7-8: Complete MVP Loop ✅ DONE
 ├── 1.8 Profile (view, edit, settings) ✅
 └── Test: Full swap cycle works end-to-end ✅
 
-Week 9-10: Discovery Enhancement 🔜 UP NEXT
-├── 2.1 Search & Filters
+Week 9-10: Discovery Enhancement 🔜 IN PROGRESS
+├── 2.1 Search & Filters ✅
 ├── 2.2 Categories
 ├── 2.3 Match Algorithm
 └── 2.4 UX Polish
@@ -290,9 +290,9 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Phase 2: Discovery & UX** - 🔜 UP NEXT
-   - Step 2.1: Search & Filters (search screen, filter bottom sheet)
-   - Step 2.2: Categories (category screen, category grid)
+1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (1/4 complete)
+   - ~~Step 2.1: Search & Filters~~ ✅ DONE
+   - Step 2.2: Categories (category screen, category grid) - **UP NEXT**
    - Step 2.3: Match Algorithm (match calculator, perfect match badge)
    - Step 2.4: UX Polish (shimmer loading, empty states, error widgets)
 
