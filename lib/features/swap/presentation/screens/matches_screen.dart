@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/services/toast_service.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/empty_state.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/error_widget.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/shimmer_loading.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
 import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
@@ -225,12 +229,7 @@ class _PendingSwapsTab extends ConsumerWidget {
             ChatDetailRoute(chatId: chatId).push(context);
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Swap request accepted!'),
-              backgroundColor: AppColors.success,
-            ),
-          );
+          ToastService.success('Swap request accepted!');
         }
       }
     }
@@ -247,13 +246,10 @@ class _PendingSwapsTab extends ConsumerWidget {
 
     if (confirmed == true) {
       final success = await ref.read(swapActionsNotifierProvider.notifier).declineSwap(swapId);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(success ? 'Swap request declined' : 'Failed to decline swap'),
-            backgroundColor: success ? AppColors.success : AppColors.error,
-          ),
-        );
+      if (success) {
+        ToastService.success('Swap request declined');
+      } else {
+        ToastService.error('Failed to decline swap');
       }
     }
   }
@@ -458,69 +454,7 @@ Widget _buildSectionHeader(
   );
 }
 
-Widget _buildEmptyState({
-  required IconData icon,
-  required String title,
-  required String subtitle,
-  String? ctaText,
-  VoidCallback? onCtaTap,
-}) {
-  return Center(
-    child: Padding(
-      padding: const EdgeInsets.all(Dimensions.xl),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(Dimensions.lg),
-            decoration: const BoxDecoration(
-              color: AppColors.gray100,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 48,
-              color: AppColors.gray400,
-            ),
-          ),
-          const SizedBox(height: Dimensions.lg),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: Dimensions.sm),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          if (ctaText != null && onCtaTap != null) ...[
-            const SizedBox(height: Dimensions.lg),
-            ElevatedButton(
-              onPressed: onCtaTap,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Dimensions.xl,
-                  vertical: Dimensions.md,
-                ),
-              ),
-              child: Text(ctaText),
-            ),
-          ],
-        ],
-      ),
-    ),
-  );
-}
-
-/// Empty state with context for navigation
+/// Empty state with context for navigation - uses shared EmptyState widget
 Widget _buildEmptyStateWithContext(
   BuildContext context, {
   required IconData icon,
@@ -529,18 +463,39 @@ Widget _buildEmptyStateWithContext(
   String? ctaText,
   VoidCallback? onCtaTap,
 }) {
-  return _buildEmptyState(
-    icon: icon,
+  // Map IconData to emoji for EmptyState widget
+  String emoji;
+  switch (icon) {
+    case Icons.swap_horiz_rounded:
+      emoji = '\ud83d\udced'; // 📭
+      break;
+    case Icons.handshake_rounded:
+      emoji = '\ud83e\udd1d'; // 🤝
+      break;
+    case Icons.emoji_events_rounded:
+      emoji = '\ud83c\udfc6'; // 🏆
+      break;
+    default:
+      emoji = '\ud83d\udd04'; // 🔄
+  }
+
+  return EmptyState(
+    icon: emoji,
     title: title,
-    subtitle: subtitle,
-    ctaText: ctaText,
-    onCtaTap: onCtaTap,
+    description: subtitle,
+    actionLabel: ctaText,
+    onAction: onCtaTap,
   );
 }
 
 Widget _buildLoading() {
-  return const Center(
-    child: CircularProgressIndicator(color: AppColors.primaryBlue),
+  return ListView.builder(
+    padding: const EdgeInsets.all(Dimensions.screenPaddingH),
+    itemCount: 3,
+    itemBuilder: (context, index) => const Padding(
+      padding: EdgeInsets.only(bottom: 12),
+      child: ShimmerSwapCard(),
+    ),
   );
 }
 
@@ -554,40 +509,8 @@ Widget _buildError([Object? error, StackTrace? stack]) {
       print('Stack: $stack');
     }
   }
-  return Center(
-    child: Padding(
-      padding: const EdgeInsets.all(Dimensions.lg),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.error_outline_rounded,
-            size: 48,
-            color: AppColors.error,
-          ),
-          const SizedBox(height: Dimensions.md),
-          const Text(
-            'Something went wrong',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          if (error != null) ...[
-            const SizedBox(height: Dimensions.sm),
-            Text(
-              error.toString(),
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ],
-      ),
-    ),
+  return LoadFailureWidget(
+    itemType: 'swaps',
   );
 }
 
@@ -627,13 +550,8 @@ Future<void> _navigateToChat(BuildContext context, WidgetRef ref, String swapId)
 
   if (chatAsync != null && context.mounted) {
     ChatDetailRoute(chatId: chatAsync.id).push(context);
-  } else if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Chat not found. Please try again.'),
-        backgroundColor: AppColors.error,
-      ),
-    );
+  } else {
+    ToastService.error('Chat not found. Please try again.');
   }
 }
 
@@ -653,12 +571,7 @@ Future<void> _completeSwap(BuildContext context, WidgetRef ref, String swapId) a
         // Navigate to rating screen
         RatingRoute(swapId: swapId).push(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to complete swap. Please try again.'),
-            backgroundColor: AppColors.error,
-          ),
-        );
+        ToastService.error('Failed to complete swap. Please try again.');
       }
     }
   }

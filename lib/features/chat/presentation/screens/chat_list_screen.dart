@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/empty_state.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/error_widget.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/shimmer_loading.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/chat/domain/models/chat_model.dart';
@@ -65,50 +68,8 @@ class ChatListScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(Dimensions.xl),
-              decoration: const BoxDecoration(
-                color: AppColors.gray100,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.chat_bubble_outline_rounded,
-                size: 48,
-                color: AppColors.gray400,
-              ),
-            ),
-            const SizedBox(height: Dimensions.lg),
-            const Text(
-              'No conversations yet',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: Dimensions.sm),
-            const Text(
-              'When you start a swap, you\'ll be able to chat with your partner here.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Dimensions.lg),
-            ElevatedButton(
-              onPressed: () => const HomeRoute().go(context),
-              child: const Text('Find Someone to Swap With'),
-            ),
-          ],
-        ),
-      ),
+    return EmptyStateNoMessages(
+      onFindPartners: () => const HomeRoute().go(context),
     );
   }
 
@@ -116,86 +77,15 @@ class ChatListScreen extends ConsumerWidget {
     return ListView.builder(
       itemCount: 5,
       itemBuilder: (context, index) {
-        return _buildShimmerItem();
+        return const ShimmerChatItem();
       },
     );
   }
 
-  Widget _buildShimmerItem() {
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.md),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.gray100)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.gray200,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: Dimensions.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 120,
-                  height: 14,
-                  decoration: BoxDecoration(
-                    color: AppColors.gray200,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: AppColors.gray100,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildError(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: Dimensions.md),
-            const Text(
-              'Something went wrong',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: Dimensions.lg),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(userChatsProvider),
-              child: const Text('Try Again'),
-            ),
-          ],
-        ),
-      ),
+    return LoadFailureWidget(
+      itemType: 'messages',
+      onRetry: () => ref.invalidate(userChatsProvider),
     );
   }
 }

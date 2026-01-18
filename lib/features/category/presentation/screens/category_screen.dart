@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/empty_state.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/error_widget.dart';
 import 'package:skill_swap_marketplace/features/category/presentation/providers/category_users_provider.dart';
 import 'package:skill_swap_marketplace/features/category/presentation/widgets/category_header.dart';
 import 'package:skill_swap_marketplace/features/category/presentation/widgets/category_sort_sheet.dart';
@@ -187,135 +189,29 @@ class CategoryScreen extends ConsumerWidget {
   ) {
     if (selectedSkill != null) {
       // Empty filter state
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(Dimensions.xl),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.search_off_rounded,
-                size: 64,
-                color: AppColors.gray400,
-              ),
-              const SizedBox(height: Dimensions.md),
-              Text(
-                'No $selectedSkill teachers found',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Dimensions.sm),
-              const Text(
-                'Try selecting a different skill\nor view all teachers',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: Dimensions.lg),
-              OutlinedButton(
-                onPressed: () {
-                  ref
-                      .read(categoryNotifierProvider(categoryId).notifier)
-                      .selectSkill(null);
-                },
-                child: const Text('View All'),
-              ),
-            ],
-          ),
-        ),
+      return EmptyStateNoResults(
+        query: selectedSkill,
+        onClearSearch: () {
+          ref
+              .read(categoryNotifierProvider(categoryId).notifier)
+              .selectSkill(null);
+        },
       );
     }
 
     // Empty category state
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _getCategoryEmoji(categoryId),
-              style: const TextStyle(fontSize: 64),
-            ),
-            const SizedBox(height: Dimensions.md),
-            Text(
-              'No teachers yet in ${_formatCategoryName(categoryId)}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Dimensions.sm),
-            const Text(
-              'Be the first to offer your\nskills to the community!',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Dimensions.lg),
-            ElevatedButton(
-              onPressed: () => const EditProfileRoute().push(context),
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              child: Text('Add ${_formatCategoryName(categoryId)} Skills'),
-            ),
-          ],
-        ),
-      ),
+    return EmptyStateCategoryEmpty(
+      categoryName: _formatCategoryName(categoryId),
+      onAddSkills: () => const EditProfileRoute().push(context),
     );
   }
 
   Widget _buildErrorState(BuildContext context, WidgetRef ref, Object error) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.warning_amber_rounded,
-              size: 64,
-              color: AppColors.warning,
-            ),
-            const SizedBox(height: Dimensions.md),
-            const Text(
-              'Failed to load teachers',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: Dimensions.sm),
-            const Text(
-              'Please try again',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: Dimensions.lg),
-            ElevatedButton(
-              onPressed: () {
-                ref.invalidate(categoryUsersProvider(categoryId));
-              },
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+    return LoadFailureWidget(
+      itemType: 'teachers',
+      onRetry: () {
+        ref.invalidate(categoryUsersProvider(categoryId));
+      },
     );
   }
 

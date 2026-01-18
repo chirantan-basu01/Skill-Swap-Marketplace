@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/services/toast_service.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
@@ -151,26 +152,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       // Refresh user data
       ref.invalidate(currentUserProfileProvider);
 
+      ToastService.success('Profile updated successfully');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.success,
-          ),
-        );
         context.pop();
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update profile: $e'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      ToastService.error('Failed to update profile: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -296,12 +283,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                           const SizedBox(height: Dimensions.sm),
                           TextButton.icon(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Photo upload coming soon'),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
+                              ToastService.info('Photo upload coming soon');
                             },
                             icon: const Icon(Icons.camera_alt_outlined, size: 18),
                             label: const Text('Change Photo'),

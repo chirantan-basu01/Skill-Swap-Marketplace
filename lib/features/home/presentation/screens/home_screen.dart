@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/empty_state.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/error_widget.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/shimmer_loading.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_card.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
@@ -92,7 +95,7 @@ class HomeScreen extends ConsumerWidget {
                 // Navigate to profile
               },
             ),
-            loading: () => const _ShimmerCircle(size: Dimensions.avatarSm),
+            loading: () => const ShimmerCircle(size: Dimensions.avatarSm),
             error: (_, __) => const UserAvatar(size: AvatarSize.sm),
           ),
           const SizedBox(width: 12),
@@ -111,7 +114,7 @@ class HomeScreen extends ConsumerWidget {
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  loading: () => const _ShimmerBox(width: 100, height: 20),
+                  loading: () => const ShimmerBox(width: 100, height: 20),
                   error: (_, __) => const Text('Hi there!'),
                 ),
                 const SizedBox(height: 2),
@@ -548,7 +551,7 @@ class HomeScreen extends ConsumerWidget {
       itemBuilder: (context, index) {
         return Padding(
           padding: EdgeInsets.only(right: index < 2 ? Dimensions.md : 0),
-          child: const _ShimmerCard(width: 160, height: 200),
+          child: const ShimmerUserCardCompact(),
         );
       },
     );
@@ -563,7 +566,7 @@ class HomeScreen extends ConsumerWidget {
           2,
           (index) => const Padding(
             padding: EdgeInsets.only(bottom: 12),
-            child: _ShimmerCard(height: 120),
+            child: ShimmerUserCardFull(),
           ),
         ),
       ),
@@ -571,53 +574,24 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildCategoryShimmer() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final tileWidth = screenWidth * 0.185;
-        final tileHeight = tileWidth * 1.17;
-
-        return ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimensions.screenPaddingH,
-          ),
-          itemCount: 5,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.only(right: index < 4 ? 12 : 0),
-              child: _ShimmerCard(width: tileWidth, height: tileHeight),
-            );
-          },
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(
+        horizontal: Dimensions.screenPaddingH,
+      ),
+      itemCount: 5,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.only(right: index < 4 ? 12 : 0),
+          child: const ShimmerCategoryTile(),
         );
       },
     );
   }
 
   Widget _buildErrorCard(String message) {
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.lg),
-      decoration: BoxDecoration(
-        color: AppColors.errorSurface,
-        borderRadius: BorderRadius.circular(Dimensions.radiusMd),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            '😕',
-            style: TextStyle(fontSize: 32),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            message,
-            style: const TextStyle(
-              fontSize: 13,
-              color: AppColors.error,
-            ),
-          ),
-        ],
-      ),
+    return InlineErrorWidget(
+      message: message,
     );
   }
 }
@@ -793,63 +767,6 @@ class _CategoryTile extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Shimmer loading placeholders
-class _ShimmerBox extends StatelessWidget {
-  final double width;
-  final double height;
-
-  const _ShimmerBox({required this.width, required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: AppColors.gray200,
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
-}
-
-class _ShimmerCircle extends StatelessWidget {
-  final double size;
-
-  const _ShimmerCircle({required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        color: AppColors.gray200,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-}
-
-class _ShimmerCard extends StatelessWidget {
-  final double? width;
-  final double height;
-
-  const _ShimmerCard({this.width, required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: AppColors.gray100,
-        borderRadius: BorderRadius.circular(Dimensions.radiusLg),
       ),
     );
   }

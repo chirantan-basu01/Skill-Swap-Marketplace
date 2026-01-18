@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/empty_state.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/error_widget.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/shimmer_loading.dart';
 import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/wallet/presentation/providers/wallet_provider.dart';
 import 'package:skill_swap_marketplace/features/wallet/presentation/widgets/transaction_list.dart';
@@ -206,51 +209,11 @@ class WalletScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyTransactions(WidgetRef ref) {
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.xl),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 64,
-            color: AppColors.gray300,
-          ),
-          const SizedBox(height: Dimensions.md),
-          const Text(
-            'Your first transaction!',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: Dimensions.xs),
-          Text(
-            'Complete a swap to see more activity here.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: Dimensions.lg),
-          ElevatedButton(
-            onPressed: () {
-              // Switch to Home tab (index 0) in the bottom navigation
-              ref.read(navigationIndexProvider.notifier).state = 0;
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text('Find a Swap Partner'),
-          ),
-        ],
-      ),
+    return EmptyStateNoTransactions(
+      onStartSwap: () {
+        // Switch to Home tab (index 0) in the bottom navigation
+        ref.read(navigationIndexProvider.notifier).state = 0;
+      },
     );
   }
 
@@ -258,40 +221,22 @@ class WalletScreen extends ConsumerWidget {
     return Column(
       children: List.generate(
         4,
-        (index) => Container(
-          margin: const EdgeInsets.symmetric(
+        (index) => Padding(
+          padding: const EdgeInsets.symmetric(
             horizontal: Dimensions.lg,
             vertical: Dimensions.xs,
           ),
-          height: 72,
-          decoration: BoxDecoration(
-            color: AppColors.gray100,
-            borderRadius: BorderRadius.circular(8),
-          ),
+          child: const ShimmerBox(height: 72, borderRadius: 8),
         ),
       ),
     );
   }
 
   Widget _buildErrorTransactions(String error) {
-    return Container(
-      padding: const EdgeInsets.all(Dimensions.xl),
-      child: Column(
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 48,
-            color: AppColors.gray400,
-          ),
-          const SizedBox(height: Dimensions.sm),
-          Text(
-            'Failed to load transactions',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
+    return const Padding(
+      padding: EdgeInsets.all(Dimensions.xl),
+      child: InlineErrorWidget(
+        message: 'Failed to load transactions',
       ),
     );
   }
