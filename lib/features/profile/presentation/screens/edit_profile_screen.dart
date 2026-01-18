@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/constants/route_constants.dart';
 import 'package:skill_swap_marketplace/core/services/toast_service.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
@@ -391,39 +392,29 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     const SizedBox(height: Dimensions.xl),
 
                     // Edit Skills Section
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(Dimensions.md),
-                      decoration: BoxDecoration(
-                        color: AppColors.gray100,
-                        borderRadius: BorderRadius.circular(Dimensions.radiusMd),
-                      ),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.school_outlined,
-                            size: 32,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(height: Dimensions.sm),
-                          const Text(
-                            'Want to update your skills?',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          const SizedBox(height: Dimensions.xs),
-                          const Text(
-                            'Skill editing coming soon',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
+                    _SectionLabel(label: 'Skills'),
+                    const SizedBox(height: Dimensions.sm),
+
+                    // Skills You Teach
+                    _SkillEditButton(
+                      title: 'Skills You Teach',
+                      subtitle: '${user.skillsOffered.length} skill${user.skillsOffered.length != 1 ? 's' : ''}',
+                      icon: Icons.school_rounded,
+                      iconColor: AppColors.primaryBlue,
+                      backgroundColor: AppColors.primarySurface,
+                      onTap: () => context.push(RoutePath.editSkillsOffered),
+                    ),
+
+                    const SizedBox(height: Dimensions.sm),
+
+                    // Skills You Want to Learn
+                    _SkillEditButton(
+                      title: 'Skills to Learn',
+                      subtitle: '${user.skillsWanted.length} skill${user.skillsWanted.length != 1 ? 's' : ''}',
+                      icon: Icons.auto_stories_rounded,
+                      iconColor: AppColors.secondaryTeal,
+                      backgroundColor: AppColors.secondarySurface,
+                      onTap: () => context.push(RoutePath.editSkillsWanted),
                     ),
 
                     const SizedBox(height: Dimensions.xl),
@@ -567,5 +558,85 @@ class _AvailabilitySelector extends StatelessWidget {
       case Availability.flexible:
         return 'Flexible';
     }
+  }
+}
+
+class _SkillEditButton extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color iconColor;
+  final Color backgroundColor;
+  final VoidCallback onTap;
+
+  const _SkillEditButton({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.iconColor,
+    required this.backgroundColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Dimensions.radiusMd),
+      child: Container(
+        padding: const EdgeInsets.all(Dimensions.md),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(Dimensions.radiusMd),
+          border: Border.all(color: AppColors.gray200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: Dimensions.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textTertiary,
+              size: 24,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

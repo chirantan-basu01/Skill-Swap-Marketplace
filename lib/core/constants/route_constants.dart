@@ -36,6 +36,8 @@ class RoutePath {
   // Profile
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
+  static const String editSkillsOffered = '/profile/edit/skills-offered';
+  static const String editSkillsWanted = '/profile/edit/skills-wanted';
   static const String userProfile = '/user/:userId';
   static const String settings = '/settings';
 
@@ -82,6 +84,8 @@ class RouteName {
   // Profile
   static const String profile = 'profile';
   static const String editProfile = 'edit-profile';
+  static const String editSkillsOffered = 'edit-skills-offered';
+  static const String editSkillsWanted = 'edit-skills-wanted';
   static const String userProfile = 'user-profile';
   static const String settings = 'settings';
 

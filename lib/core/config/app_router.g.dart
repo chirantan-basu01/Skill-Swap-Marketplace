@@ -28,6 +28,8 @@ List<RouteBase> get $appRoutes => [
       $walletRoute,
       $profileRoute,
       $editProfileRoute,
+      $editSkillsOfferedRoute,
+      $editSkillsWantedRoute,
       $userProfileRoute,
       $settingsRoute,
       $notificationsRoute,
@@ -525,6 +527,54 @@ extension $EditProfileRouteExtension on EditProfileRoute {
 
   String get location => GoRouteData.$location(
         '/profile/edit',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $editSkillsOfferedRoute => GoRouteData.$route(
+      path: '/profile/edit/skills-offered',
+      name: 'edit-skills-offered',
+      factory: $EditSkillsOfferedRouteExtension._fromState,
+    );
+
+extension $EditSkillsOfferedRouteExtension on EditSkillsOfferedRoute {
+  static EditSkillsOfferedRoute _fromState(GoRouterState state) =>
+      const EditSkillsOfferedRoute();
+
+  String get location => GoRouteData.$location(
+        '/profile/edit/skills-offered',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $editSkillsWantedRoute => GoRouteData.$route(
+      path: '/profile/edit/skills-wanted',
+      name: 'edit-skills-wanted',
+      factory: $EditSkillsWantedRouteExtension._fromState,
+    );
+
+extension $EditSkillsWantedRouteExtension on EditSkillsWantedRoute {
+  static EditSkillsWantedRoute _fromState(GoRouterState state) =>
+      const EditSkillsWantedRoute();
+
+  String get location => GoRouteData.$location(
+        '/profile/edit/skills-wanted',
       );
 
   void go(BuildContext context) => context.go(location);

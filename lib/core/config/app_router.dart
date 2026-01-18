@@ -20,6 +20,8 @@ import 'package:skill_swap_marketplace/features/user/presentation/screens/user_p
 import 'package:skill_swap_marketplace/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/settings_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_skills_offered_screen.dart';
+import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_skills_wanted_screen.dart';
 import 'package:skill_swap_marketplace/features/search/presentation/screens/search_screen.dart';
 
 part 'app_router.g.dart';
@@ -271,6 +273,26 @@ class EditProfileRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const EditProfileScreen();
+  }
+}
+
+@TypedGoRoute<EditSkillsOfferedRoute>(path: RoutePath.editSkillsOffered, name: RouteName.editSkillsOffered)
+class EditSkillsOfferedRoute extends GoRouteData {
+  const EditSkillsOfferedRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const EditSkillsOfferedScreen();
+  }
+}
+
+@TypedGoRoute<EditSkillsWantedRoute>(path: RoutePath.editSkillsWanted, name: RouteName.editSkillsWanted)
+class EditSkillsWantedRoute extends GoRouteData {
+  const EditSkillsWantedRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const EditSkillsWantedScreen();
   }
 }
 

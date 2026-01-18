@@ -14,8 +14,14 @@
 - [x] **Step 1.6: Chat Feature** - Chat list, Chat detail, Real-time messaging, Swap-chat integration
 - [x] **Step 1.7: Rating & Credits Feature** - Star rating, Rating tags, Rating screen, Wallet screen
 - [x] **Step 1.8: Profile Feature** - Profile screen, Edit profile, Settings with logout
+- [x] **Step 2.1: Search & Filters** - Search screen, debounced search, filters, sort options
+- [x] **Step 2.2: Categories** - Category screen, skill filters, teacher cards, sort sheet
+- [x] **Step 2.3: Match Algorithm** - Match calculator, perfect match badge, scoring system
+- [x] **Step 2.4: UX Polish** - Shimmer loading, empty states, error widgets, toast service
+- [x] **Step 2.5: Skill Editing** - Edit skills offered/wanted screens, Edit Profile skill buttons
 
 **Progress: Phase 1 - 100% complete (8/8 steps) ✅**
+**Progress: Phase 2 - 100% complete (5/5 steps) ✅**
 
 ### Recent Bug Fixes & Improvements
 - Fixed stale user data when switching accounts (providers now watch `authStateChangesProvider`)
@@ -196,18 +202,18 @@ User's own profile management.
 - `ToastService` - Global toast service with success/error/warning/info types
 - Context extension and mixin for easy toast access
 
-### ⬜ Step 2.5: Skill Editing
+### ✅ Step 2.5: Skill Editing - COMPLETED
 Allow users to update their skills after initial profile setup.
 
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Edit Skills Offered screen | `lib/features/profile/presentation/screens/edit_skills_offered_screen.dart` |
-| ⬜ | Edit Skills Wanted screen | `lib/features/profile/presentation/screens/edit_skills_wanted_screen.dart` |
-| ⬜ | Update user repository (updateSkillsOffered, updateSkillsWanted) | `lib/features/auth/data/repositories/user_repository_impl.dart` |
-| ⬜ | Update Edit Profile screen with skill edit buttons | `lib/features/profile/presentation/screens/edit_profile_screen.dart` |
-| ⬜ | Add routes for skill editing screens | `lib/core/config/app_router.dart` |
+| ✅ | Edit Skills Offered screen | `lib/features/profile/presentation/screens/edit_skills_offered_screen.dart` |
+| ✅ | Edit Skills Wanted screen | `lib/features/profile/presentation/screens/edit_skills_wanted_screen.dart` |
+| ✅ | Update user repository (updateSkillsOffered, updateSkillsWanted) | `lib/features/auth/data/repositories/user_repository_impl.dart` |
+| ✅ | Update Edit Profile screen with skill edit buttons | `lib/features/profile/presentation/screens/edit_profile_screen.dart` |
+| ✅ | Add routes for skill editing screens | `lib/core/config/app_router.dart` |
 
-**Approach**: Reuse existing setup screens UI (category dropdown, skill autocomplete, level selector) adapted for edit mode.
+**Approach**: Reused existing AddSkillOfferedDialog and AddSkillWantedDialog widgets, SkillChipList for display, with local state management for unsaved changes detection.
 
 ---
 
@@ -309,12 +315,12 @@ Week 7-8: Complete MVP Loop ✅ DONE
 ├── 1.8 Profile (view, edit, settings) ✅
 └── Test: Full swap cycle works end-to-end ✅
 
-Week 9-10: Discovery Enhancement 🔜 IN PROGRESS
+Week 9-10: Discovery Enhancement ✅ DONE
 ├── 2.1 Search & Filters ✅
 ├── 2.2 Categories ✅
 ├── 2.3 Match Algorithm ✅
 ├── 2.4 UX Polish ✅
-└── 2.5 Skill Editing
+└── 2.5 Skill Editing ✅
 
 Week 11-12: Sessions & Safety
 ├── 3.1-3.3 Session Management
@@ -326,17 +332,17 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (4/5 complete)
+1. **Phase 2: Discovery & UX** - ✅ COMPLETE (5/5)
    - ~~Step 2.1: Search & Filters~~ ✅ DONE
    - ~~Step 2.2: Categories~~ ✅ DONE (category screen, skill filter, sort, teacher cards)
    - ~~Step 2.3: Match Algorithm~~ ✅ DONE (match calculator, perfect match badge, scoring system)
    - ~~Step 2.4: UX Polish~~ ✅ DONE (shimmer loading, empty states, error widgets, toast service)
-   - Step 2.5: Skill Editing (edit skills offered/wanted from Edit Profile) - **UP NEXT**
+   - ~~Step 2.5: Skill Editing~~ ✅ DONE (edit skills offered/wanted screens accessible from Edit Profile)
 
-2. **Phase 3: Session Management**
-   - Schedule session screen with date/time picker
-   - Active session screen with timer
-   - Local notifications for reminders
+2. **Phase 3: Session Management** - **UP NEXT**
+   - Step 3.1: Scheduling - Schedule session screen with date/time picker
+   - Step 3.2: Active Session - Session screen with timer and video link
+   - Step 3.3: Local Notifications - Session reminders (24h, 1h, 15m)
 
 3. **Note**: ScheduleSessionRoute and ActiveSessionRoute exist but use placeholder screens
 
