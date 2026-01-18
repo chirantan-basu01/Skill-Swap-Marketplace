@@ -175,13 +175,26 @@ User's own profile management.
 - Activity recency: 15 points max (active today = 15, yesterday = 12, etc.)
 - Experience: 15 points max (completed swaps)
 
-### ⬜ Step 2.4: UX Polish
+### ✅ Step 2.4: UX Polish - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Loading shimmer widgets | `lib/core/shared/widgets/shimmer_loading.dart` |
-| ⬜ | Empty state widgets | `lib/core/shared/widgets/empty_state.dart` |
-| ⬜ | Error widgets | `lib/core/shared/widgets/error_widget.dart` |
-| ⬜ | Snackbar/toast service | `lib/core/services/toast_service.dart` |
+| ✅ | Loading shimmer widgets | `lib/core/shared/widgets/shimmer_loading.dart` |
+| ✅ | Empty state widgets | `lib/core/shared/widgets/empty_state.dart` |
+| ✅ | Error widgets | `lib/core/shared/widgets/error_widget.dart` |
+| ✅ | Snackbar/toast service | `lib/core/services/toast_service.dart` |
+
+**Components Created:**
+- `Shimmer` - Animated shimmer effect with gradient shader
+- `ShimmerBox`, `ShimmerCircle` - Basic shimmer shapes
+- `ShimmerUserCardCompact`, `ShimmerUserCardFull` - User card loading states
+- `ShimmerCategoryTile`, `ShimmerChatItem`, `ShimmerSwapCard` - Feature-specific loading states
+- `EmptyState` - Generic empty state with icon, title, description, actions
+- Pre-built empty states: `EmptyStateNoMatches`, `EmptyStateNoResults`, `EmptyStateNoMessages`, etc.
+- `AppErrorWidget` - Generic error with retry action
+- Pre-built errors: `NetworkErrorWidget`, `ServerErrorWidget`, `AuthErrorWidget`, `LoadFailureWidget`
+- `InlineErrorWidget`, `ErrorBanner` - Contextual error displays
+- `ToastService` - Global toast service with success/error/warning/info types
+- Context extension and mixin for easy toast access
 
 ### ⬜ Step 2.5: Skill Editing
 Allow users to update their skills after initial profile setup.
@@ -300,7 +313,7 @@ Week 9-10: Discovery Enhancement 🔜 IN PROGRESS
 ├── 2.1 Search & Filters ✅
 ├── 2.2 Categories ✅
 ├── 2.3 Match Algorithm ✅
-├── 2.4 UX Polish
+├── 2.4 UX Polish ✅
 └── 2.5 Skill Editing
 
 Week 11-12: Sessions & Safety
@@ -313,12 +326,12 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (3/5 complete)
+1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (4/5 complete)
    - ~~Step 2.1: Search & Filters~~ ✅ DONE
    - ~~Step 2.2: Categories~~ ✅ DONE (category screen, skill filter, sort, teacher cards)
    - ~~Step 2.3: Match Algorithm~~ ✅ DONE (match calculator, perfect match badge, scoring system)
-   - Step 2.4: UX Polish (shimmer loading, empty states, error widgets) - **UP NEXT**
-   - Step 2.5: Skill Editing (edit skills offered/wanted from Edit Profile)
+   - ~~Step 2.4: UX Polish~~ ✅ DONE (shimmer loading, empty states, error widgets, toast service)
+   - Step 2.5: Skill Editing (edit skills offered/wanted from Edit Profile) - **UP NEXT**
 
 2. **Phase 3: Session Management**
    - Schedule session screen with date/time picker

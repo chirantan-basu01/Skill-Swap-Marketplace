@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/config/app_theme.dart';
 import 'package:skill_swap_marketplace/core/constants/app_constants.dart';
+import 'package:skill_swap_marketplace/core/services/toast_service.dart';
 
 /// Root widget of the application
 class App extends ConsumerWidget {
@@ -15,6 +16,7 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: AppRouter.router,
+      scaffoldMessengerKey: ToastService.messengerKey,
     );
   }
 }
