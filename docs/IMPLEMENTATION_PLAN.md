@@ -151,13 +151,16 @@ User's own profile management.
 | ✅ | Filter bottom sheet | `lib/features/search/presentation/widgets/filter_sheet.dart` |
 | ✅ | Sort options | `lib/features/search/presentation/widgets/sort_options.dart` |
 
-### ⬜ Step 2.2: Categories
+### ✅ Step 2.2: Categories - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Category screen | `lib/features/category/presentation/screens/category_screen.dart` |
-| ⬜ | Category grid widget | `lib/features/category/presentation/widgets/category_grid.dart` |
-| ⬜ | Categories provider | `lib/features/category/presentation/providers/categories_provider.dart` |
-| ⬜ | Seed categories to Firestore | Firebase Console / Script |
+| ✅ | Category screen | `lib/features/category/presentation/screens/category_screen.dart` |
+| ✅ | Category header widget | `lib/features/category/presentation/widgets/category_header.dart` |
+| ✅ | Teacher card widget | `lib/features/category/presentation/widgets/teacher_card.dart` |
+| ✅ | Skill filter chips widget | `lib/features/category/presentation/widgets/skill_filter_chips.dart` |
+| ✅ | Category sort sheet | `lib/features/category/presentation/widgets/category_sort_sheet.dart` |
+| ✅ | Category users provider | `lib/features/category/presentation/providers/category_users_provider.dart` |
+| ✅ | Seed categories to Firestore | `lib/core/utils/firestore_seeder.dart` + Settings screen Developer section |
 
 ### ⬜ Step 2.3: Match Algorithm
 | Status | Task | Files |
@@ -173,6 +176,19 @@ User's own profile management.
 | ⬜ | Empty state widgets | `lib/core/shared/widgets/empty_state.dart` |
 | ⬜ | Error widgets | `lib/core/shared/widgets/error_widget.dart` |
 | ⬜ | Snackbar/toast service | `lib/core/services/toast_service.dart` |
+
+### ⬜ Step 2.5: Skill Editing
+Allow users to update their skills after initial profile setup.
+
+| Status | Task | Files |
+|--------|------|-------|
+| ⬜ | Edit Skills Offered screen | `lib/features/profile/presentation/screens/edit_skills_offered_screen.dart` |
+| ⬜ | Edit Skills Wanted screen | `lib/features/profile/presentation/screens/edit_skills_wanted_screen.dart` |
+| ⬜ | Update user repository (updateSkillsOffered, updateSkillsWanted) | `lib/features/auth/data/repositories/user_repository_impl.dart` |
+| ⬜ | Update Edit Profile screen with skill edit buttons | `lib/features/profile/presentation/screens/edit_profile_screen.dart` |
+| ⬜ | Add routes for skill editing screens | `lib/core/config/app_router.dart` |
+
+**Approach**: Reuse existing setup screens UI (category dropdown, skill autocomplete, level selector) adapted for edit mode.
 
 ---
 
@@ -276,9 +292,10 @@ Week 7-8: Complete MVP Loop ✅ DONE
 
 Week 9-10: Discovery Enhancement 🔜 IN PROGRESS
 ├── 2.1 Search & Filters ✅
-├── 2.2 Categories
+├── 2.2 Categories ✅
 ├── 2.3 Match Algorithm
-└── 2.4 UX Polish
+├── 2.4 UX Polish
+└── 2.5 Skill Editing
 
 Week 11-12: Sessions & Safety
 ├── 3.1-3.3 Session Management
@@ -290,11 +307,12 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (1/4 complete)
+1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (2/5 complete)
    - ~~Step 2.1: Search & Filters~~ ✅ DONE
-   - Step 2.2: Categories (category screen, category grid) - **UP NEXT**
-   - Step 2.3: Match Algorithm (match calculator, perfect match badge)
+   - ~~Step 2.2: Categories~~ ✅ DONE (category screen, skill filter, sort, teacher cards)
+   - Step 2.3: Match Algorithm (match calculator, perfect match badge) - **UP NEXT**
    - Step 2.4: UX Polish (shimmer loading, empty states, error widgets)
+   - Step 2.5: Skill Editing (edit skills offered/wanted from Edit Profile)
 
 2. **Phase 3: Session Management**
    - Schedule session screen with date/time picker

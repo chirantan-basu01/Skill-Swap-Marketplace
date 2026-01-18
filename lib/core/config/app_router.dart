@@ -5,6 +5,7 @@ import 'package:skill_swap_marketplace/features/auth/presentation/screens/login_
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/signup_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/splash_screen.dart';
+import 'package:skill_swap_marketplace/features/category/presentation/screens/category_screen.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
@@ -143,7 +144,7 @@ class CategoryRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return _PlaceholderScreen(title: 'Category: $id');
+    return CategoryScreen(categoryId: id);
   }
 }
 
