@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/constants/firestore_constants.dart';
+import 'package:skill_swap_marketplace/core/utils/match_calculator.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
@@ -45,6 +44,7 @@ final usersProvider = StreamProvider<List<UserModel>>((ref) {
 });
 
 /// Provider for perfect matches (bidirectional skill match)
+/// Uses MatchCalculator for sophisticated match scoring
 final perfectMatchesProvider = Provider<List<UserModel>>((ref) {
   final currentUserAsync = ref.watch(currentUserProfileProvider);
   final usersAsync = ref.watch(usersProvider);
@@ -56,29 +56,13 @@ final perfectMatchesProvider = Provider<List<UserModel>>((ref) {
     return [];
   }
 
-  // Get skill names
-  final myOfferedSkills =
-      currentUser.skillsOffered.map((s) => s.skillName.toLowerCase()).toSet();
-  final myWantedSkills =
-      currentUser.skillsWanted.map((s) => s.skillName.toLowerCase()).toSet();
-
-  // Find users who want what I offer AND offer what I want
-  return users.where((user) {
-    final theirOfferedSkills =
-        user.skillsOffered.map((s) => s.skillName.toLowerCase()).toSet();
-    final theirWantedSkills =
-        user.skillsWanted.map((s) => s.skillName.toLowerCase()).toSet();
-
-    final theyWantMySkill =
-        myOfferedSkills.intersection(theirWantedSkills).isNotEmpty;
-    final theyOfferWhatIWant =
-        myWantedSkills.intersection(theirOfferedSkills).isNotEmpty;
-
-    return theyWantMySkill && theyOfferWhatIWant;
-  }).toList();
+  // Use MatchCalculator for perfect matches
+  final perfectMatches = MatchCalculator.getPerfectMatches(currentUser, users);
+  return perfectMatches.map((m) => m.user).toList();
 });
 
 /// Provider for recommended users (sorted by match score)
+/// Uses MatchCalculator for sophisticated match scoring
 final recommendedUsersProvider = Provider<List<UserWithScore>>((ref) {
   final currentUserAsync = ref.watch(currentUserProfileProvider);
   final usersAsync = ref.watch(usersProvider);
@@ -90,86 +74,62 @@ final recommendedUsersProvider = Provider<List<UserWithScore>>((ref) {
     return [];
   }
 
-  // Calculate match scores for all users
-  final scoredUsers = users.map((user) {
-    final score = _calculateMatchScore(currentUser, user);
-    return UserWithScore(user: user, score: score);
-  }).toList();
+  // Use MatchCalculator for recommended users (excludes perfect matches)
+  final recommended = MatchCalculator.getRecommendedUsers(
+    currentUser,
+    users,
+    limit: 20,
+    excludePerfectMatches: true,
+  );
 
-  // Sort by score descending
-  scoredUsers.sort((a, b) => b.score.compareTo(a.score));
-
-  // Return top users with score > 0
-  return scoredUsers.where((u) => u.score > 0).take(10).toList();
+  return recommended.map((m) => UserWithScore(
+    user: m.user,
+    matchResult: m.match,
+  )).toList();
 });
 
 /// Provider for recently active users
 final recentlyActiveUsersProvider = Provider<List<UserModel>>((ref) {
+  final currentUserAsync = ref.watch(currentUserProfileProvider);
   final usersAsync = ref.watch(usersProvider);
+
+  final currentUser = currentUserAsync.valueOrNull;
   final users = usersAsync.valueOrNull;
 
-  if (users == null) return [];
+  if (currentUser == null || users == null) return [];
 
-  final now = DateTime.now();
-  final threshold = now.subtract(const Duration(hours: 48));
+  // Use MatchCalculator for recently active users
+  final recentlyActive = MatchCalculator.getRecentlyActiveUsers(
+    currentUser,
+    users,
+    limit: 10,
+    maxInactiveDuration: const Duration(hours: 48),
+  );
 
-  return users.where((user) {
-    return user.lastActiveAt.isAfter(threshold);
-  }).take(5).toList();
+  return recentlyActive.map((m) => m.user).toList();
 });
 
-/// Calculate match score between two users
-int _calculateMatchScore(UserModel currentUser, UserModel otherUser) {
-  int score = 0;
-
-  // Get skill names
-  final myOfferedSkills =
-      currentUser.skillsOffered.map((s) => s.skillName.toLowerCase()).toSet();
-  final myWantedSkills =
-      currentUser.skillsWanted.map((s) => s.skillName.toLowerCase()).toSet();
-  final theirOfferedSkills =
-      otherUser.skillsOffered.map((s) => s.skillName.toLowerCase()).toSet();
-  final theirWantedSkills =
-      otherUser.skillsWanted.map((s) => s.skillName.toLowerCase()).toSet();
-
-  // Perfect match (bidirectional)
-  final theyWantMySkill =
-      myOfferedSkills.intersection(theirWantedSkills).isNotEmpty;
-  final theyOfferWhatIWant =
-      myWantedSkills.intersection(theirOfferedSkills).isNotEmpty;
-
-  if (theyWantMySkill && theyOfferWhatIWant) {
-    score += 50;
-  } else if (theyWantMySkill || theyOfferWhatIWant) {
-    score += 25;
-  }
-
-  // Rating factor (0-20 points)
-  score += ((otherUser.rating.average / 5) * 20).round();
-
-  // Activity recency (0-15 points)
-  final daysSinceActive =
-      DateTime.now().difference(otherUser.lastActiveAt).inDays;
-  score += max(0, 15 - daysSinceActive);
-
-  // Completed swaps bonus (0-15 points, capped at 15)
-  score += min(otherUser.swapsCompleted, 15);
-
-  return score;
-}
-
-/// User with calculated match score
+/// User with calculated match result
 class UserWithScore {
   final UserModel user;
-  final int score;
+  final MatchResult matchResult;
 
   UserWithScore({
     required this.user,
-    required this.score,
+    required this.matchResult,
   });
 
-  /// Get match percentage (normalized to 0-100)
-  int get matchPercentage => min(score, 100);
+  /// Get match percentage (0-100)
+  int get matchPercentage => matchResult.percentage;
+
+  /// Whether this is a perfect match
+  bool get isPerfectMatch => matchResult.isPerfectMatch;
+
+  /// Skills they teach that match what current user wants
+  List<String> get matchingSkillsTheyTeach => matchResult.matchingSkillsTheyTeach;
+
+  /// Skills they want that match what current user teaches
+  List<String> get matchingSkillsTheyWant => matchResult.matchingSkillsTheyWant;
 }
 
 /// Provider to check if a user is online (active within last 5 minutes)

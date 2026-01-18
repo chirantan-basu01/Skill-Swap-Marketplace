@@ -162,12 +162,18 @@ User's own profile management.
 | ✅ | Category users provider | `lib/features/category/presentation/providers/category_users_provider.dart` |
 | ✅ | Seed categories to Firestore | `lib/core/utils/firestore_seeder.dart` + Settings screen Developer section |
 
-### ⬜ Step 2.3: Match Algorithm
+### ✅ Step 2.3: Match Algorithm - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Match calculator utility | `lib/core/utils/match_calculator.dart` |
-| ⬜ | Perfect match badge widget | `lib/core/shared/widgets/perfect_match_badge.dart` |
-| ⬜ | Recommended users provider | `lib/features/home/presentation/providers/recommended_provider.dart` |
+| ✅ | Match calculator utility | `lib/core/utils/match_calculator.dart` |
+| ✅ | Perfect match badge widget | `lib/core/shared/widgets/perfect_match_badge.dart` |
+| ✅ | Updated users provider with MatchCalculator | `lib/features/home/presentation/providers/users_provider.dart` |
+
+**Match Scoring (0-100 points):**
+- Skill overlap: 50 points max (perfect match 40 + bonus, one-way 20 + bonus)
+- Rating: 20 points max (scaled from 0-5)
+- Activity recency: 15 points max (active today = 15, yesterday = 12, etc.)
+- Experience: 15 points max (completed swaps)
 
 ### ⬜ Step 2.4: UX Polish
 | Status | Task | Files |
@@ -293,7 +299,7 @@ Week 7-8: Complete MVP Loop ✅ DONE
 Week 9-10: Discovery Enhancement 🔜 IN PROGRESS
 ├── 2.1 Search & Filters ✅
 ├── 2.2 Categories ✅
-├── 2.3 Match Algorithm
+├── 2.3 Match Algorithm ✅
 ├── 2.4 UX Polish
 └── 2.5 Skill Editing
 
@@ -307,11 +313,11 @@ Week 11-12: Sessions & Safety
 
 ## Next Immediate Steps
 
-1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (2/5 complete)
+1. **Phase 2: Discovery & UX** - 🔜 IN PROGRESS (3/5 complete)
    - ~~Step 2.1: Search & Filters~~ ✅ DONE
    - ~~Step 2.2: Categories~~ ✅ DONE (category screen, skill filter, sort, teacher cards)
-   - Step 2.3: Match Algorithm (match calculator, perfect match badge) - **UP NEXT**
-   - Step 2.4: UX Polish (shimmer loading, empty states, error widgets)
+   - ~~Step 2.3: Match Algorithm~~ ✅ DONE (match calculator, perfect match badge, scoring system)
+   - Step 2.4: UX Polish (shimmer loading, empty states, error widgets) - **UP NEXT**
    - Step 2.5: Skill Editing (edit skills offered/wanted from Edit Profile)
 
 2. **Phase 3: Session Management**
