@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:skill_swap_marketplace/core/services/notification_service.dart';
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 
@@ -124,6 +126,9 @@ class ScheduleSessionNotifier extends _$ScheduleSessionNotifier {
     );
 
     if (result) {
+      // Schedule session reminders
+      await _scheduleSessionReminders();
+
       state = state.copyWith(status: ScheduleSessionStatus.success);
       return true;
     } else {
@@ -132,6 +137,53 @@ class ScheduleSessionNotifier extends _$ScheduleSessionNotifier {
         errorMessage: 'Failed to schedule session. Please try again.',
       );
       return false;
+    }
+  }
+
+  /// Schedule local notification reminders for the session
+  Future<void> _scheduleSessionReminders() async {
+    try {
+      // Get swap details for notification content
+      final swapRepo = ref.read(swapRepositoryProvider);
+      final swapResult = await swapRepo.getSwapById(swapId);
+
+      await swapResult.fold(
+        (failure) async {
+          debugPrint('Failed to get swap for notifications: ${failure.message}');
+        },
+        (swap) async {
+          // Calculate session DateTime from selected date and time
+          final (hour, minute) = parseTimeString(state.selectedTime!);
+          final sessionDateTime = DateTime(
+            state.selectedDate!.year,
+            state.selectedDate!.month,
+            state.selectedDate!.day,
+            hour,
+            minute,
+          );
+
+          // Get notification service
+          final notificationService = ref.read(notificationServiceProvider);
+
+          // Determine partner name and skill name for notification
+          // Note: We don't know who the current user is here, so we'll use both names
+          final partnerName = swap.providerName; // The person they're meeting
+          final skillName = swap.requesterOffers.skillName; // The skill being taught
+
+          // Schedule reminders
+          await notificationService.scheduleSessionReminders(
+            swapId: swapId,
+            partnerName: partnerName,
+            skillName: skillName,
+            sessionDateTime: sessionDateTime,
+          );
+
+          debugPrint('Session reminders scheduled for $sessionDateTime');
+        },
+      );
+    } catch (e) {
+      debugPrint('Error scheduling session reminders: $e');
+      // Don't fail the session scheduling if notifications fail
     }
   }
 

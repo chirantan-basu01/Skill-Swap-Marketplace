@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skill_swap_marketplace/core/services/notification_service.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:skill_swap_marketplace/features/chat/domain/models/chat_model.dart';
@@ -283,3 +284,63 @@ String formatDateSeparator(DateTime dateTime) {
     return '${months[dateTime.month - 1]} ${dateTime.day}';
   }
 }
+
+// =============================================================================
+// MESSAGE NOTIFICATIONS
+// =============================================================================
+
+/// Provider to track which chat is currently being viewed
+/// Set to null when not viewing any chat
+final activeChatIdProvider = StateProvider<String?>((ref) => null);
+
+/// Notifier for handling message notifications
+class MessageNotificationNotifier extends StateNotifier<void> {
+  final NotificationService _notificationService;
+  final Ref _ref;
+
+  // Track last shown message to avoid duplicates
+  final Map<String, String> _lastShownMessageIds = {};
+
+  MessageNotificationNotifier(this._notificationService, this._ref) : super(null);
+
+  /// Show notification for a new message if appropriate
+  /// Call this when a new message is detected in the chat stream
+  Future<void> onNewMessage({
+    required String chatId,
+    required MessageModel message,
+    required String currentUserId,
+  }) async {
+    // Don't show notification if:
+    // 1. Message is from the current user
+    // 2. User is currently viewing this chat
+    // 3. We already showed notification for this message
+
+    if (message.senderId == currentUserId) return;
+
+    final activeChat = _ref.read(activeChatIdProvider);
+    if (activeChat == chatId) return;
+
+    if (_lastShownMessageIds[chatId] == message.id) return;
+
+    // Show the notification
+    await _notificationService.showNewMessageNotification(
+      chatId: chatId,
+      senderName: message.senderName,
+      message: message.content,
+    );
+
+    _lastShownMessageIds[chatId] = message.id;
+  }
+
+  /// Clear tracking for a chat (call when entering a chat)
+  void clearChatTracking(String chatId) {
+    _lastShownMessageIds.remove(chatId);
+  }
+}
+
+/// Provider for message notifications
+final messageNotificationProvider =
+    StateNotifierProvider<MessageNotificationNotifier, void>((ref) {
+  final notificationService = ref.watch(notificationServiceProvider);
+  return MessageNotificationNotifier(notificationService, ref);
+});

@@ -22,7 +22,7 @@
 
 **Progress: Phase 1 - 100% complete (8/8 steps) ✅**
 **Progress: Phase 2 - 100% complete (5/5 steps) ✅**
-**Progress: Phase 3 - 67% complete (2/3 steps) 🔄**
+**Progress: Phase 3 - 100% complete (3/3 steps) ✅**
 
 ### Recent Bug Fixes & Improvements
 - Fixed stale user data when switching accounts (providers now watch `authStateChangesProvider`)
@@ -260,12 +260,26 @@ Allow users to update their skills after initial profile setup.
 - Session states: loading, waitingForPartner, active, ended, cancelled
 - 5-minute warning banner, Time's up modal, End session confirmation dialog
 
-### ⬜ Step 3.3: Local Notifications
+### ✅ Step 3.3: Local Notifications - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Notification service | `lib/core/services/notification_service.dart` |
-| ⬜ | Session reminders (24h, 1h, 15m) | (within notification service) |
-| ⬜ | New message notifications | (within notification service) |
+| ✅ | Notification service | `lib/core/services/notification_service.dart` |
+| ✅ | Session reminders (24h, 1h, 15m) | (within notification service) |
+| ✅ | New message notifications | (within chat_provider.dart) |
+
+**Components Created:**
+- `NotificationService` - Core service for local notifications with:
+  - Timezone-aware scheduling
+  - Android notification channels (session reminders, messages, swap updates)
+  - iOS permission handling
+  - Session reminder scheduling (24h, 1h, 15m before session)
+  - New message notification display
+  - Swap update notifications
+- `notificationServiceProvider` - Riverpod provider for notification service
+- `activeChatIdProvider` - Tracks currently viewed chat (suppresses notifications)
+- `MessageNotificationNotifier` - Handles message notification logic
+- Integration with `ScheduleSessionNotifier` - Auto-schedules reminders when session is scheduled
+- Integration with `ChatDetailScreen` - Tracks active chat for notification suppression
 
 ---
 
@@ -365,10 +379,10 @@ Week 11-12: Sessions & Safety
    - ~~Step 2.4: UX Polish~~ ✅ DONE (shimmer loading, empty states, error widgets, toast service)
    - ~~Step 2.5: Skill Editing~~ ✅ DONE (edit skills offered/wanted screens accessible from Edit Profile)
 
-2. **Phase 3: Session Management** - **IN PROGRESS**
+2. **Phase 3: Session Management** - ✅ COMPLETE (3/3)
    - ~~Step 3.1: Scheduling~~ ✅ DONE (schedule session screen with calendar, time picker, video link)
    - ~~Step 3.2: Active Session~~ ✅ DONE (session screen with timer, video link, multiple states)
-   - Step 3.3: Local Notifications - Session reminders (24h, 1h, 15m)
+   - ~~Step 3.3: Local Notifications~~ ✅ DONE (session reminders, message notifications)
 
 3. **Note**: ScheduleSessionRoute and ActiveSessionRoute exist but use placeholder screens
 

@@ -311,7 +311,7 @@ class _SwapStreamProviderElement
 }
 
 String _$scheduleSessionNotifierHash() =>
-    r'94512561f0f2780a0a4a804b759d78354f32ad65';
+    r'd0fe8afa980d192bfa7646f34bc5b38ab9278a81';
 
 abstract class _$ScheduleSessionNotifier
     extends BuildlessAutoDisposeNotifier<ScheduleSessionState> {

@@ -36,7 +36,18 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     // Mark as read when opening
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(chatActionsProvider.notifier).markAsRead(widget.chatId);
+      // Set this as the active chat (suppresses notifications for this chat)
+      ref.read(activeChatIdProvider.notifier).state = widget.chatId;
+      // Clear notification tracking for this chat
+      ref.read(messageNotificationProvider.notifier).clearChatTracking(widget.chatId);
     });
+  }
+
+  @override
+  void deactivate() {
+    // Clear active chat when navigating away
+    ref.read(activeChatIdProvider.notifier).state = null;
+    super.deactivate();
   }
 
   @override

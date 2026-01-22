@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/app.dart';
+import 'package:skill_swap_marketplace/core/services/notification_service.dart';
 import 'package:skill_swap_marketplace/firebase_options.dart';
 
 void main() async {
@@ -13,11 +14,21 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Initialize notification service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // Set system UI mode - don't render behind navigation bar
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+  );
 
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(

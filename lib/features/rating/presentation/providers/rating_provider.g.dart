@@ -190,7 +190,7 @@ final swapsNeedingRatingProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SwapsNeedingRatingRef = AutoDisposeProviderRef<List<SwapModel>>;
-String _$ratingNotifierHash() => r'01027dc3527de3ef5a8cfff3c6a94b4d541091bd';
+String _$ratingNotifierHash() => r'2f8afe65cbb4eb0ab846b980b90a9fe07631dd9e';
 
 abstract class _$RatingNotifier
     extends BuildlessAutoDisposeNotifier<RatingState> {
