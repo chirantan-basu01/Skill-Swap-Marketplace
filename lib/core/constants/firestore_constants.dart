@@ -10,6 +10,7 @@ class FirestoreCollections {
   static const String messages = 'messages';
   static const String transactions = 'transactions';
   static const String reports = 'reports';
+  static const String notifications = 'notifications';
 
   // Document path helpers
   static String userDoc(String userId) => '$users/$userId';
@@ -143,5 +144,23 @@ class ReportFields {
   static const String reason = 'reason';
   static const String description = 'description';
   static const String status = 'status';
+  static const String createdAt = 'createdAt';
+}
+
+/// Firestore field name constants for Notifications collection
+class NotificationFields {
+  NotificationFields._();
+
+  static const String id = 'id';
+  static const String userId = 'userId';
+  static const String type = 'type';
+  static const String title = 'title';
+  static const String body = 'body';
+  static const String swapId = 'swapId';
+  static const String chatId = 'chatId';
+  static const String fromUserId = 'fromUserId';
+  static const String fromUserName = 'fromUserName';
+  static const String fromUserPhoto = 'fromUserPhoto';
+  static const String isRead = 'isRead';
   static const String createdAt = 'createdAt';
 }

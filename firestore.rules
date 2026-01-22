@@ -100,5 +100,22 @@ service cloud.firestore {
       allow create: if isSignedIn();
       allow update, delete: if false;
     }
+
+    // ========================================================================
+    // NOTIFICATIONS COLLECTION
+    // ========================================================================
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // Signed in users can create notifications (for other users)
+      allow create: if isSignedIn();
+
+      // Users can only update their own notifications (mark as read)
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // Users can only delete their own notifications
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
   }
 }

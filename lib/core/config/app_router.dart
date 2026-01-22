@@ -25,6 +25,7 @@ import 'package:skill_swap_marketplace/features/profile/presentation/screens/edi
 import 'package:skill_swap_marketplace/features/search/presentation/screens/search_screen.dart';
 import 'package:skill_swap_marketplace/features/session/presentation/screens/schedule_session_screen.dart';
 import 'package:skill_swap_marketplace/features/session/presentation/screens/active_session_screen.dart';
+import 'package:skill_swap_marketplace/features/notifications/presentation/screens/notification_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -330,7 +331,7 @@ class NotificationsRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const _PlaceholderScreen(title: 'Notifications');
+    return const NotificationScreen();
   }
 }
 

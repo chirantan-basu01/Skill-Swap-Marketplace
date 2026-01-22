@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
-import 'package:skill_swap_marketplace/core/shared/widgets/empty_state.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/error_widget.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/shimmer_loading.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
@@ -11,6 +10,7 @@ import 'package:skill_swap_marketplace/core/shared/widgets/user_card.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
 import 'package:skill_swap_marketplace/features/home/presentation/providers/users_provider.dart';
+import 'package:skill_swap_marketplace/features/notifications/presentation/providers/notification_provider.dart';
 import 'package:skill_swap_marketplace/features/skills/presentation/providers/category_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -129,18 +129,8 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Notification bell
-          IconButton(
-            onPressed: () => const NotificationsRoute().push(context),
-            icon: const Icon(
-              Icons.notifications_outlined,
-              color: AppColors.textPrimary,
-            ),
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.gray100,
-              padding: const EdgeInsets.all(10),
-            ),
-          ),
+          // Notification bell with badge
+          _NotificationBell(ref: ref),
         ],
       ),
     );
@@ -768,6 +758,66 @@ class _CategoryTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Notification bell icon with unread badge
+class _NotificationBell extends StatelessWidget {
+  final WidgetRef ref;
+
+  const _NotificationBell({required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    final unreadCountAsync = ref.watch(unreadNotificationCountProvider);
+
+    return Stack(
+      children: [
+        IconButton(
+          onPressed: () => const NotificationsRoute().push(context),
+          icon: const Icon(
+            Icons.notifications_outlined,
+            color: AppColors.textPrimary,
+          ),
+          style: IconButton.styleFrom(
+            backgroundColor: AppColors.gray100,
+            padding: const EdgeInsets.all(10),
+          ),
+        ),
+        // Badge
+        unreadCountAsync.when(
+          data: (count) {
+            if (count == 0) return const SizedBox.shrink();
+            return Positioned(
+              right: 4,
+              top: 4,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.error,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 18,
+                  minHeight: 18,
+                ),
+                child: Text(
+                  count > 9 ? '9+' : count.toString(),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
+      ],
     );
   }
 }
