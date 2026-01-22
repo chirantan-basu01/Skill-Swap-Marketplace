@@ -23,6 +23,7 @@ import 'package:skill_swap_marketplace/features/profile/presentation/screens/edi
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_skills_offered_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_skills_wanted_screen.dart';
 import 'package:skill_swap_marketplace/features/search/presentation/screens/search_screen.dart';
+import 'package:skill_swap_marketplace/features/session/presentation/screens/schedule_session_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -184,7 +185,7 @@ class ScheduleSessionRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return _PlaceholderScreen(title: 'Schedule Session: $swapId');
+    return ScheduleSessionScreen(swapId: swapId);
   }
 }
 

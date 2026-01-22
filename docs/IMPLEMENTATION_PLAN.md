@@ -22,6 +22,7 @@
 
 **Progress: Phase 1 - 100% complete (8/8 steps) ✅**
 **Progress: Phase 2 - 100% complete (5/5 steps) ✅**
+**Progress: Phase 3 - 33% complete (1/3 steps) 🔄**
 
 ### Recent Bug Fixes & Improvements
 - Fixed stale user data when switching accounts (providers now watch `authStateChangesProvider`)
@@ -220,12 +221,22 @@ Allow users to update their skills after initial profile setup.
 ## Phase 3: Session Management
 **Goal**: Complete session lifecycle with scheduling and tracking.
 
-### ⬜ Step 3.1: Scheduling
+### ✅ Step 3.1: Scheduling - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Schedule session screen | `lib/features/session/presentation/screens/schedule_session_screen.dart` |
-| ⬜ | Date/time picker widgets | `lib/features/session/presentation/widgets/datetime_picker.dart` |
-| ⬜ | Session provider | `lib/features/session/presentation/providers/session_provider.dart` |
+| ✅ | Schedule session screen | `lib/features/session/presentation/screens/schedule_session_screen.dart` |
+| ✅ | Date/time picker widgets | `lib/features/session/presentation/widgets/datetime_picker.dart` |
+| ✅ | Session provider | `lib/features/session/presentation/providers/session_provider.dart` |
+
+**Components Created:**
+- `ScheduleSessionScreen` - Full-screen scheduling with calendar, time picker, video link input
+- `SessionCalendar` - Custom calendar widget with month navigation, date selection
+- `SessionTimePicker` - Dropdown with bottom sheet time slot selector (15-min intervals)
+- `VideoLinkInput` - URL input with quick links for Google Meet/Zoom
+- `SwapSummaryCard` - Displays skill exchange info and duration
+- `ScheduleSessionNotifier` - Riverpod state management for scheduling flow
+- `swapByIdProvider` - Fetch single swap by ID
+- `showScheduleSessionSheet()` - Alternative bottom sheet presentation
 
 ### ⬜ Step 3.2: Active Session
 | Status | Task | Files |
@@ -339,8 +350,8 @@ Week 11-12: Sessions & Safety
    - ~~Step 2.4: UX Polish~~ ✅ DONE (shimmer loading, empty states, error widgets, toast service)
    - ~~Step 2.5: Skill Editing~~ ✅ DONE (edit skills offered/wanted screens accessible from Edit Profile)
 
-2. **Phase 3: Session Management** - **UP NEXT**
-   - Step 3.1: Scheduling - Schedule session screen with date/time picker
+2. **Phase 3: Session Management** - **IN PROGRESS**
+   - ~~Step 3.1: Scheduling~~ ✅ DONE (schedule session screen with calendar, time picker, video link)
    - Step 3.2: Active Session - Session screen with timer and video link
    - Step 3.3: Local Notifications - Session reminders (24h, 1h, 15m)
 

@@ -119,4 +119,6 @@ class RouteNames {
   static String swapRequest(String userId) => '/swap-request/$userId';
   static String rating(String swapId) => '/rating/$swapId';
   static String userProfile(String userId) => '/user/$userId';
+  static String scheduleSession(String swapId) => '/schedule-session/$swapId';
+  static String activeSession(String swapId) => '/session/$swapId';
 }
