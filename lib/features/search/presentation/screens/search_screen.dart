@@ -10,8 +10,14 @@ import 'package:skill_swap_marketplace/features/search/presentation/providers/se
 import 'package:skill_swap_marketplace/features/search/presentation/widgets/sort_options.dart';
 import 'package:skill_swap_marketplace/features/skills/presentation/providers/category_provider.dart';
 
+/// Provider for controlling autocomplete suggestions visibility
+final _showSuggestionsProvider = StateProvider.autoDispose<bool>((ref) => false);
+
 class SearchScreen extends ConsumerStatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, this.initialSort});
+
+  /// Optional initial sort option passed from navigation
+  final String? initialSort;
 
   @override
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
@@ -20,20 +26,27 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _searchController = TextEditingController();
   final _focusNode = FocusNode();
-  bool _showSuggestions = false;
 
   @override
   void initState() {
     super.initState();
-    // Auto-focus the search field
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNode.requestFocus();
-    });
+
+    // Check if we have an initial sort option (from "See All" navigation)
+    if (widget.initialSort != null) {
+      final sortOption = SearchSortOption.fromString(widget.initialSort);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(searchNotifierProvider.notifier).initializeWithSort(sortOption);
+      });
+    } else {
+      // Auto-focus the search field only if not in browse mode
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusNode.requestFocus();
+      });
+    }
 
     _searchController.addListener(() {
-      setState(() {
-        _showSuggestions = _searchController.text.length >= 2;
-      });
+      ref.read(_showSuggestionsProvider.notifier).state =
+          _searchController.text.length >= 2;
     });
   }
 
@@ -49,6 +62,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final searchState = ref.watch(searchNotifierProvider);
     final recentSearches = ref.watch(recentSearchesProvider);
     final popularSearches = ref.watch(popularSearchesProvider);
+    final showSuggestions = ref.watch(_showSuggestionsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -69,7 +83,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           : Stack(
               children: [
                 _buildInitialState(recentSearches, popularSearches),
-                if (_showSuggestions) _buildAutocompleteSuggestions(),
+                if (showSuggestions) _buildAutocompleteSuggestions(),
               ],
             ),
     );
@@ -92,7 +106,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           if (value.trim().isNotEmpty) {
             ref.read(recentSearchesProvider.notifier).addSearch(value);
             ref.read(searchNotifierProvider.notifier).search();
-            setState(() => _showSuggestions = false);
+            ref.read(_showSuggestionsProvider.notifier).state = false;
           }
         },
         textInputAction: TextInputAction.search,
@@ -118,7 +132,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   onPressed: () {
                     _searchController.clear();
                     ref.read(searchNotifierProvider.notifier).clearSearch();
-                    setState(() => _showSuggestions = false);
+                    ref.read(_showSuggestionsProvider.notifier).state = false;
                   },
                   icon: const Icon(
                     Icons.close_rounded,
@@ -204,7 +218,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ref.read(searchNotifierProvider.notifier).updateQuery(suggestion.text);
                 ref.read(recentSearchesProvider.notifier).addSearch(suggestion.text);
                 ref.read(searchNotifierProvider.notifier).search();
-                setState(() => _showSuggestions = false);
+                ref.read(_showSuggestionsProvider.notifier).state = false;
                 _focusNode.unfocus();
               },
             );
@@ -339,7 +353,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     ref.read(searchNotifierProvider.notifier).updateQuery(query);
     ref.read(recentSearchesProvider.notifier).addSearch(query);
     ref.read(searchNotifierProvider.notifier).search();
-    setState(() => _showSuggestions = false);
+    ref.read(_showSuggestionsProvider.notifier).state = false;
     _focusNode.unfocus();
   }
 
@@ -372,7 +386,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             vertical: Dimensions.sm,
           ),
           child: Text(
-            '${searchState.results.length} Results for "${searchState.query}"',
+            searchState.query.isEmpty
+                ? '${searchState.results.length} Users • Sorted by ${searchState.sortOption.label}'
+                : '${searchState.results.length} Results for "${searchState.query}"',
             style: const TextStyle(
               fontSize: 14,
               color: AppColors.gray500,

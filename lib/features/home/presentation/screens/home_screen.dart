@@ -187,7 +187,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Perfect Matches',
           onSeeAll: perfectMatches.isNotEmpty
               ? () {
-                  // Navigate to all perfect matches
+                  const SearchRoute(sort: 'matchScore').push(context);
                 }
               : null,
         ),
@@ -300,7 +300,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Recommended for You',
           onSeeAll: recommendedUsers.isNotEmpty
               ? () {
-                  // Navigate to all recommendations
+                  const SearchRoute(sort: 'matchScore').push(context);
                 }
               : null,
         ),
@@ -487,7 +487,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Recently Active',
           onSeeAll: recentlyActiveUsers.isNotEmpty
               ? () {
-                  // Navigate to all active users
+                  const SearchRoute(sort: 'recentlyActive').push(context);
                 }
               : null,
         ),

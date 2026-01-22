@@ -62,12 +62,22 @@ class SearchFilters {
 /// Sort options for search results
 enum SearchSortOption {
   relevance('Relevance'),
+  matchScore('Best Match'),
   rating('Highest Rated'),
   recentlyActive('Recently Active'),
   mostSwaps('Most Swaps');
 
   final String label;
   const SearchSortOption(this.label);
+
+  /// Parse from string (for route parameters)
+  static SearchSortOption fromString(String? value) {
+    if (value == null) return SearchSortOption.relevance;
+    return SearchSortOption.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => SearchSortOption.relevance,
+    );
+  }
 }
 
 /// Search state
@@ -230,8 +240,20 @@ class SearchNotifier extends _$SearchNotifier {
       // Apply filters
       users = _applyFilters(users, filters, currentUser.uid);
 
+      // Get current user model for match score calculation if needed
+      UserModel? currentUserModel;
+      if (state.sortOption == SearchSortOption.matchScore) {
+        final currentUserDoc = await FirebaseFirestore.instance
+            .collection(FirestoreCollections.users)
+            .doc(currentUser.uid)
+            .get();
+        if (currentUserDoc.exists) {
+          currentUserModel = UserModel.fromJson(currentUserDoc.data()!);
+        }
+      }
+
       // Sort results
-      users = _sortResults(users, state.sortOption);
+      users = _sortResults(users, state.sortOption, currentUserModel);
 
       state = state.copyWith(
         results: users,
@@ -292,12 +314,21 @@ class SearchNotifier extends _$SearchNotifier {
     return filtered;
   }
 
-  List<UserModel> _sortResults(List<UserModel> users, SearchSortOption option) {
+  List<UserModel> _sortResults(List<UserModel> users, SearchSortOption option, [UserModel? currentUserModel]) {
     final sorted = List<UserModel>.from(users);
 
     switch (option) {
       case SearchSortOption.relevance:
         // Keep original order (search relevance)
+        break;
+      case SearchSortOption.matchScore:
+        if (currentUserModel != null) {
+          sorted.sort((a, b) {
+            final scoreA = _calculateMatchScore(currentUserModel, a);
+            final scoreB = _calculateMatchScore(currentUserModel, b);
+            return scoreB.compareTo(scoreA);
+          });
+        }
         break;
       case SearchSortOption.rating:
         sorted.sort((a, b) => b.rating.average.compareTo(a.rating.average));
@@ -313,10 +344,102 @@ class SearchNotifier extends _$SearchNotifier {
     return sorted;
   }
 
+  /// Calculate match score between two users
+  int _calculateMatchScore(UserModel currentUser, UserModel otherUser) {
+    int score = 0;
+
+    // Check if other user offers what current user wants
+    for (final wanted in currentUser.skillsWanted) {
+      for (final offered in otherUser.skillsOffered) {
+        if (offered.skillName.toLowerCase() == wanted.skillName.toLowerCase()) {
+          score += 20; // Exact skill match
+        } else if (offered.categoryId == wanted.categoryId) {
+          score += 10; // Same category
+        }
+      }
+    }
+
+    // Check if current user offers what other user wants (mutual match bonus)
+    for (final wanted in otherUser.skillsWanted) {
+      for (final offered in currentUser.skillsOffered) {
+        if (offered.skillName.toLowerCase() == wanted.skillName.toLowerCase()) {
+          score += 20;
+        } else if (offered.categoryId == wanted.categoryId) {
+          score += 10;
+        }
+      }
+    }
+
+    // Bonus for rating
+    score += (otherUser.rating.average * 2).round();
+
+    return score;
+  }
+
   /// Trigger immediate search (for filter apply)
   void search() {
     _debounceTimer?.cancel();
     _performSearch();
+  }
+
+  /// Initialize search with a specific sort option and trigger browse all
+  void initializeWithSort(SearchSortOption sortOption) {
+    state = state.copyWith(sortOption: sortOption);
+    _browseAll();
+  }
+
+  /// Browse all users (no query filter, just sort)
+  Future<void> _browseAll() async {
+    state = state.copyWith(isLoading: true, clearError: true, hasSearched: true);
+
+    try {
+      final currentUser = ref.read(authRepositoryProvider).currentUser;
+      if (currentUser == null) {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Please log in to browse',
+        );
+        return;
+      }
+
+      // Fetch users from Firestore
+      final snapshot = await FirebaseFirestore.instance
+          .collection(FirestoreCollections.users)
+          .where('status', isEqualTo: 'active')
+          .limit(100)
+          .get();
+
+      var users = snapshot.docs
+          .map((doc) => UserModel.fromJson(doc.data()))
+          .where((user) => user.uid != currentUser.uid)
+          .toList();
+
+      // Get current user model for match score calculation
+      UserModel? currentUserModel;
+      if (state.sortOption == SearchSortOption.matchScore) {
+        final currentUserDoc = await FirebaseFirestore.instance
+            .collection(FirestoreCollections.users)
+            .doc(currentUser.uid)
+            .get();
+        if (currentUserDoc.exists) {
+          currentUserModel = UserModel.fromJson(currentUserDoc.data()!);
+        }
+      }
+
+      // Sort results
+      users = _sortResults(users, state.sortOption, currentUserModel);
+
+      state = state.copyWith(
+        results: users,
+        isLoading: false,
+        query: '', // Clear query to indicate browse mode
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to load users. Please try again.',
+      );
+    }
   }
 }
 

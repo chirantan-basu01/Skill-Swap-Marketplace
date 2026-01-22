@@ -280,10 +280,15 @@ RouteBase get $searchRoute => GoRouteData.$route(
     );
 
 extension $SearchRouteExtension on SearchRoute {
-  static SearchRoute _fromState(GoRouterState state) => const SearchRoute();
+  static SearchRoute _fromState(GoRouterState state) => SearchRoute(
+        sort: state.uri.queryParameters['sort'],
+      );
 
   String get location => GoRouteData.$location(
         '/search',
+        queryParams: {
+          if (sort != null) 'sort': sort,
+        },
       );
 
   void go(BuildContext context) => context.go(location);

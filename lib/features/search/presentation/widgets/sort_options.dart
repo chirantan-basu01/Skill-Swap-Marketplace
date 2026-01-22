@@ -101,6 +101,8 @@ class SortOptionsSheet extends StatelessWidget {
     switch (option) {
       case SearchSortOption.relevance:
         return Icons.auto_awesome_rounded;
+      case SearchSortOption.matchScore:
+        return Icons.favorite_rounded;
       case SearchSortOption.rating:
         return Icons.star_rounded;
       case SearchSortOption.recentlyActive:

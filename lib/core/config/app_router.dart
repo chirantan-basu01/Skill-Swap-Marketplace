@@ -144,11 +144,14 @@ class HomeRoute extends GoRouteData {
 
 @TypedGoRoute<SearchRoute>(path: RoutePath.search, name: RouteName.search)
 class SearchRoute extends GoRouteData {
-  const SearchRoute();
+  const SearchRoute({this.sort});
+
+  /// Optional initial sort option (e.g., 'matchScore', 'recentlyActive')
+  final String? sort;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const SearchScreen();
+    return SearchScreen(initialSort: sort);
   }
 }
 
