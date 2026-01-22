@@ -60,6 +60,10 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       firstSwapDate: const TimestampConverter()
           .fromJson(json['firstSwapDate'] as Timestamp?),
       swapsThisWeek: (json['swapsThisWeek'] as num?)?.toInt() ?? 0,
+      blockedUsers: (json['blockedUsers'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -86,6 +90,7 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'firstSwapDate':
           const TimestampConverter().toJson(instance.firstSwapDate),
       'swapsThisWeek': instance.swapsThisWeek,
+      'blockedUsers': instance.blockedUsers,
     };
 
 const _$AvailabilityEnumMap = {

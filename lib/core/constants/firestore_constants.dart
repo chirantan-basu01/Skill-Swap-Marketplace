@@ -47,6 +47,7 @@ class UserFields {
   static const String lastActiveAt = 'lastActiveAt';
   static const String firstSwapDate = 'firstSwapDate';
   static const String swapsThisWeek = 'swapsThisWeek';
+  static const String blockedUsers = 'blockedUsers';
 }
 
 /// Firestore field name constants for Categories collection

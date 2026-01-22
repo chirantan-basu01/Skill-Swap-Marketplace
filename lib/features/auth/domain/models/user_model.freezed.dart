@@ -242,7 +242,8 @@ mixin _$UserModel {
       throw _privateConstructorUsedError; // New user limits
   @TimestampConverter()
   DateTime? get firstSwapDate => throw _privateConstructorUsedError;
-  int get swapsThisWeek => throw _privateConstructorUsedError;
+  int get swapsThisWeek => throw _privateConstructorUsedError; // Blocked users
+  List<String> get blockedUsers => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -279,7 +280,8 @@ abstract class $UserModelCopyWith<$Res> {
       @TimestampConverterNonNull() DateTime updatedAt,
       @TimestampConverterNonNull() DateTime lastActiveAt,
       @TimestampConverter() DateTime? firstSwapDate,
-      int swapsThisWeek});
+      int swapsThisWeek,
+      List<String> blockedUsers});
 
   $UserRatingCopyWith<$Res> get rating;
 }
@@ -319,6 +321,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? lastActiveAt = null,
     Object? firstSwapDate = freezed,
     Object? swapsThisWeek = null,
+    Object? blockedUsers = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -401,6 +404,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.swapsThisWeek
           : swapsThisWeek // ignore: cast_nullable_to_non_nullable
               as int,
+      blockedUsers: null == blockedUsers
+          ? _value.blockedUsers
+          : blockedUsers // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 
@@ -443,7 +450,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       @TimestampConverterNonNull() DateTime updatedAt,
       @TimestampConverterNonNull() DateTime lastActiveAt,
       @TimestampConverter() DateTime? firstSwapDate,
-      int swapsThisWeek});
+      int swapsThisWeek,
+      List<String> blockedUsers});
 
   @override
   $UserRatingCopyWith<$Res> get rating;
@@ -482,6 +490,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? lastActiveAt = null,
     Object? firstSwapDate = freezed,
     Object? swapsThisWeek = null,
+    Object? blockedUsers = null,
   }) {
     return _then(_$UserModelImpl(
       uid: null == uid
@@ -564,6 +573,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.swapsThisWeek
           : swapsThisWeek // ignore: cast_nullable_to_non_nullable
               as int,
+      blockedUsers: null == blockedUsers
+          ? _value._blockedUsers
+          : blockedUsers // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -591,9 +604,11 @@ class _$UserModelImpl implements _UserModel {
       @TimestampConverterNonNull() required this.updatedAt,
       @TimestampConverterNonNull() required this.lastActiveAt,
       @TimestampConverter() this.firstSwapDate,
-      this.swapsThisWeek = 0})
+      this.swapsThisWeek = 0,
+      final List<String> blockedUsers = const []})
       : _skillsOffered = skillsOffered,
-        _skillsWanted = skillsWanted;
+        _skillsWanted = skillsWanted,
+        _blockedUsers = blockedUsers;
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -674,10 +689,20 @@ class _$UserModelImpl implements _UserModel {
   @override
   @JsonKey()
   final int swapsThisWeek;
+// Blocked users
+  final List<String> _blockedUsers;
+// Blocked users
+  @override
+  @JsonKey()
+  List<String> get blockedUsers {
+    if (_blockedUsers is EqualUnmodifiableListView) return _blockedUsers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_blockedUsers);
+  }
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, email: $email, emailVerified: $emailVerified, displayName: $displayName, photoUrl: $photoUrl, bio: $bio, skillsOffered: $skillsOffered, skillsWanted: $skillsWanted, timezone: $timezone, availability: $availability, creditBalance: $creditBalance, swapsCompleted: $swapsCompleted, hoursExchanged: $hoursExchanged, rating: $rating, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, lastActiveAt: $lastActiveAt, firstSwapDate: $firstSwapDate, swapsThisWeek: $swapsThisWeek)';
+    return 'UserModel(uid: $uid, email: $email, emailVerified: $emailVerified, displayName: $displayName, photoUrl: $photoUrl, bio: $bio, skillsOffered: $skillsOffered, skillsWanted: $skillsWanted, timezone: $timezone, availability: $availability, creditBalance: $creditBalance, swapsCompleted: $swapsCompleted, hoursExchanged: $hoursExchanged, rating: $rating, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, lastActiveAt: $lastActiveAt, firstSwapDate: $firstSwapDate, swapsThisWeek: $swapsThisWeek, blockedUsers: $blockedUsers)';
   }
 
   @override
@@ -719,7 +744,9 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.firstSwapDate, firstSwapDate) ||
                 other.firstSwapDate == firstSwapDate) &&
             (identical(other.swapsThisWeek, swapsThisWeek) ||
-                other.swapsThisWeek == swapsThisWeek));
+                other.swapsThisWeek == swapsThisWeek) &&
+            const DeepCollectionEquality()
+                .equals(other._blockedUsers, _blockedUsers));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -745,7 +772,8 @@ class _$UserModelImpl implements _UserModel {
         updatedAt,
         lastActiveAt,
         firstSwapDate,
-        swapsThisWeek
+        swapsThisWeek,
+        const DeepCollectionEquality().hash(_blockedUsers)
       ]);
 
   /// Create a copy of UserModel
@@ -785,7 +813,8 @@ abstract class _UserModel implements UserModel {
       @TimestampConverterNonNull() required final DateTime updatedAt,
       @TimestampConverterNonNull() required final DateTime lastActiveAt,
       @TimestampConverter() final DateTime? firstSwapDate,
-      final int swapsThisWeek}) = _$UserModelImpl;
+      final int swapsThisWeek,
+      final List<String> blockedUsers}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -833,7 +862,9 @@ abstract class _UserModel implements UserModel {
   @TimestampConverter()
   DateTime? get firstSwapDate;
   @override
-  int get swapsThisWeek;
+  int get swapsThisWeek; // Blocked users
+  @override
+  List<String> get blockedUsers;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

@@ -15,6 +15,7 @@ import 'package:skill_swap_marketplace/features/skills/domain/models/skill_model
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 import 'package:skill_swap_marketplace/features/user/presentation/providers/user_reviews_provider.dart';
+import 'package:skill_swap_marketplace/features/report/presentation/providers/report_provider.dart';
 
 /// Provider for fetching a user by ID
 final userByIdProvider =
@@ -65,6 +66,7 @@ class UserProfileViewScreen extends ConsumerWidget {
     final matchInfo = currentUser != null
         ? _calculateMatchInfo(currentUser, user)
         : null;
+    final isBlocked = ref.watch(isUserBlockedProvider(user.uid));
 
     return CustomScrollView(
       slivers: [
@@ -84,7 +86,7 @@ class UserProfileViewScreen extends ConsumerWidget {
                 Icons.more_vert_rounded,
                 color: AppColors.textPrimary,
               ),
-              onSelected: (value) => _handleMenuAction(context, value, user),
+              onSelected: (value) => _handleMenuAction(context, ref, value, user),
               itemBuilder: (context) => [
                 const PopupMenuItem(
                   value: 'share',
@@ -106,13 +108,20 @@ class UserProfileViewScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const PopupMenuItem(
-                  value: 'block',
+                PopupMenuItem(
+                  value: isBlocked ? 'unblock' : 'block',
                   child: Row(
                     children: [
-                      Icon(Icons.block_outlined, size: 20, color: AppColors.error),
-                      SizedBox(width: 12),
-                      Text('Block User', style: TextStyle(color: AppColors.error)),
+                      Icon(
+                        isBlocked ? Icons.check_circle_outline : Icons.block_outlined,
+                        size: 20,
+                        color: isBlocked ? AppColors.success : AppColors.error,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        isBlocked ? 'Unblock User' : 'Block User',
+                        style: TextStyle(color: isBlocked ? AppColors.success : AppColors.error),
+                      ),
                     ],
                   ),
                 ),
@@ -880,17 +889,78 @@ class UserProfileViewScreen extends ConsumerWidget {
     );
   }
 
-  void _handleMenuAction(BuildContext context, String action, UserModel user) {
+  void _handleMenuAction(BuildContext context, WidgetRef ref, String action, UserModel user) {
     switch (action) {
       case 'share':
-        // Share profile
+        // Share profile - TODO: implement share functionality
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Share feature coming soon')),
+        );
         break;
       case 'report':
-        ReportRoute(userId: user.uid).push(context);
+        ReportRoute(userId: user.uid, userName: user.displayName).push(context);
         break;
       case 'block':
-        // Show block confirmation dialog
+        _showBlockConfirmDialog(context, ref, user);
         break;
+      case 'unblock':
+        _handleUnblock(context, ref, user);
+        break;
+    }
+  }
+
+  void _showBlockConfirmDialog(BuildContext context, WidgetRef ref, UserModel user) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Block User'),
+        content: Text(
+          'Are you sure you want to block ${user.displayName}? '
+          'They won\'t be able to see your profile or contact you.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              final success = await ref.read(blockUserNotifierProvider.notifier).blockUser(user.uid);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success
+                          ? '${user.displayName} has been blocked'
+                          : 'Failed to block user',
+                    ),
+                    backgroundColor: success ? AppColors.success : AppColors.error,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Block'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleUnblock(BuildContext context, WidgetRef ref, UserModel user) async {
+    final success = await ref.read(blockUserNotifierProvider.notifier).unblockUser(user.uid);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? '${user.displayName} has been unblocked'
+                : 'Failed to unblock user',
+          ),
+          backgroundColor: success ? AppColors.success : AppColors.error,
+        ),
+      );
     }
   }
 

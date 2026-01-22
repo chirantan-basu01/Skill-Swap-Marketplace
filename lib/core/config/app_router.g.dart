@@ -698,10 +698,18 @@ RouteBase get $reportRoute => GoRouteData.$route(
 extension $ReportRouteExtension on ReportRoute {
   static ReportRoute _fromState(GoRouterState state) => ReportRoute(
         userId: state.pathParameters['userId']!,
+        userName: state.uri.queryParameters['user-name']!,
+        swapId: state.uri.queryParameters['swap-id'],
+        messageId: state.uri.queryParameters['message-id'],
       );
 
   String get location => GoRouteData.$location(
         '/report/${Uri.encodeComponent(userId)}',
+        queryParams: {
+          'user-name': userName,
+          if (swapId != null) 'swap-id': swapId,
+          if (messageId != null) 'message-id': messageId,
+        },
       );
 
   void go(BuildContext context) => context.go(location);

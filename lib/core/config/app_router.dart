@@ -27,6 +27,7 @@ import 'package:skill_swap_marketplace/features/search/presentation/screens/sear
 import 'package:skill_swap_marketplace/features/session/presentation/screens/schedule_session_screen.dart';
 import 'package:skill_swap_marketplace/features/session/presentation/screens/active_session_screen.dart';
 import 'package:skill_swap_marketplace/features/notifications/presentation/screens/notification_screen.dart';
+import 'package:skill_swap_marketplace/features/report/presentation/screens/report_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -351,13 +352,26 @@ class NotificationsRoute extends GoRouteData {
 
 @TypedGoRoute<ReportRoute>(path: RoutePath.report, name: RouteName.report)
 class ReportRoute extends GoRouteData {
-  const ReportRoute({required this.userId});
+  const ReportRoute({
+    required this.userId,
+    required this.userName,
+    this.swapId,
+    this.messageId,
+  });
 
   final String userId;
+  final String userName;
+  final String? swapId;
+  final String? messageId;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return _PlaceholderScreen(title: 'Report: $userId');
+    return ReportScreen(
+      reportedUserId: userId,
+      reportedUserName: userName,
+      swapId: swapId,
+      messageId: messageId,
+    );
   }
 }
 

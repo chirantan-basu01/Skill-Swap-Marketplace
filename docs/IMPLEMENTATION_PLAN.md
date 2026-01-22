@@ -300,12 +300,21 @@ Allow users to update their skills after initial profile setup.
 - Google Sign-In users skip verification (already verified by Google)
 - Integration with splash screen to redirect unverified users
 
-### ⬜ Step 4.2: Reporting
+### ✅ Step 4.2: Reporting - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Report screen | `lib/features/report/presentation/screens/report_screen.dart` |
-| ⬜ | Report repository | `lib/features/report/data/repositories/report_repository.dart` |
-| ⬜ | Block user functionality | (within user repository) |
+| ✅ | Report screen | `lib/features/report/presentation/screens/report_screen.dart` |
+| ✅ | Report repository | `lib/features/report/data/repositories/report_repository_impl.dart` |
+| ✅ | Block user functionality | `lib/features/report/presentation/providers/report_provider.dart` |
+
+**Components Created:**
+- `ReportScreen` - Full report form with reason selection and description
+- `ReportRepository` interface and implementation
+- `ReportNotifier` - State management for submitting reports
+- `BlockUserNotifier` - State management for blocking/unblocking users
+- `isUserBlockedProvider` - Quick check if a user is blocked
+- Added `blockedUsers` field to UserModel
+- Integrated report/block actions in user profile view popup menu
 
 ### ⬜ Step 4.3: Anti-Abuse
 | Status | Task | Files |

@@ -99,6 +99,9 @@ class UserModel with _$UserModel {
     // New user limits
     @TimestampConverter() DateTime? firstSwapDate,
     @Default(0) int swapsThisWeek,
+
+    // Blocked users
+    @Default([]) List<String> blockedUsers,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
