@@ -136,7 +136,7 @@ class SwapRepositoryImpl implements SwapRepository {
   FutureVoid updateSwapStatus(String swapId, SwapStatus status) async {
     try {
       await _swapsCollection.doc(swapId).update({
-        SwapFields.status: status.name,
+        SwapFields.status: status.jsonValue,
         SwapFields.updatedAt: Timestamp.now(),
       });
       return right(null);
@@ -151,7 +151,7 @@ class SwapRepositoryImpl implements SwapRepository {
   FutureVoid acceptSwap(String swapId) async {
     try {
       await _swapsCollection.doc(swapId).update({
-        SwapFields.status: SwapStatus.accepted.name,
+        SwapFields.status: SwapStatus.accepted.jsonValue,
         SwapFields.updatedAt: Timestamp.now(),
       });
       return right(null);
@@ -166,7 +166,7 @@ class SwapRepositoryImpl implements SwapRepository {
   FutureVoid declineSwap(String swapId) async {
     try {
       await _swapsCollection.doc(swapId).update({
-        SwapFields.status: SwapStatus.declined.name,
+        SwapFields.status: SwapStatus.declined.jsonValue,
         SwapFields.updatedAt: Timestamp.now(),
       });
       return right(null);
@@ -182,7 +182,7 @@ class SwapRepositoryImpl implements SwapRepository {
       String swapId, String cancelledBy, String? reason) async {
     try {
       await _swapsCollection.doc(swapId).update({
-        SwapFields.status: SwapStatus.cancelled.name,
+        SwapFields.status: SwapStatus.cancelled.jsonValue,
         SwapFields.cancelledBy: cancelledBy,
         SwapFields.cancelReason: reason ?? '',
         SwapFields.updatedAt: Timestamp.now(),
@@ -210,7 +210,7 @@ class SwapRepositoryImpl implements SwapRepository {
       );
 
       await _swapsCollection.doc(swapId).update({
-        SwapFields.status: SwapStatus.scheduled.name,
+        SwapFields.status: SwapStatus.scheduled.jsonValue,
         SwapFields.session: session.toJson(),
         SwapFields.updatedAt: Timestamp.now(),
       });
@@ -252,7 +252,7 @@ class SwapRepositoryImpl implements SwapRepository {
           (!isRequester && session.requesterStarted);
 
       if (bothStarted) {
-        updates[SwapFields.status] = SwapStatus.inProgress.name;
+        updates[SwapFields.status] = SwapStatus.inProgress.jsonValue;
         updates['${SwapFields.session}.actualStartTime'] = Timestamp.now();
       }
 
@@ -269,7 +269,7 @@ class SwapRepositoryImpl implements SwapRepository {
   FutureVoid completeSwap(String swapId) async {
     try {
       await _swapsCollection.doc(swapId).update({
-        SwapFields.status: SwapStatus.completed.name,
+        SwapFields.status: SwapStatus.completed.jsonValue,
         SwapFields.completedAt: Timestamp.now(),
         SwapFields.updatedAt: Timestamp.now(),
         '${SwapFields.session}.actualEndTime': Timestamp.now(),
@@ -323,7 +323,7 @@ class SwapRepositoryImpl implements SwapRepository {
 
       final hasPending = snapshot.docs.any((doc) {
         final data = doc.data();
-        return data[SwapFields.status] == SwapStatus.pending.name;
+        return data[SwapFields.status] == SwapStatus.pending.jsonValue;
       });
 
       return right(hasPending);
@@ -346,7 +346,7 @@ class SwapRepositoryImpl implements SwapRepository {
         final data = doc.data();
         final isParticipant = data[SwapFields.requesterId] == userId ||
             data[SwapFields.providerId] == userId;
-        final isCompleted = data[SwapFields.status] == SwapStatus.completed.name;
+        final isCompleted = data[SwapFields.status] == SwapStatus.completed.jsonValue;
         return isParticipant && isCompleted;
       }).length;
 

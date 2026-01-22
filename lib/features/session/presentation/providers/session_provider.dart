@@ -199,3 +199,303 @@ String formatScheduledDateTime(DateTime date, String time) {
 
   return '$weekday, $month $day at $time';
 }
+
+// =============================================================================
+// ACTIVE SESSION MANAGEMENT
+// =============================================================================
+
+/// Active session state enum
+enum ActiveSessionStatus {
+  /// Initial loading state
+  loading,
+
+  /// Waiting for partner to start
+  waitingForPartner,
+
+  /// Both users have started, session is active
+  active,
+
+  /// Session ended, navigating to rating
+  ended,
+
+  /// Session was cancelled or no-show
+  cancelled,
+
+  /// Error state
+  error,
+}
+
+/// State for active session screen
+class ActiveSessionState {
+  final ActiveSessionStatus status;
+  final SwapModel? swap;
+  final DateTime? sessionStartTime;
+  final bool currentUserStarted;
+  final bool partnerStarted;
+  final bool isEndingSession;
+  final bool isMarkingNoShow;
+  final bool showFiveMinuteWarning;
+  final bool showTimeUpModal;
+  final String? errorMessage;
+
+  const ActiveSessionState({
+    this.status = ActiveSessionStatus.loading,
+    this.swap,
+    this.sessionStartTime,
+    this.currentUserStarted = false,
+    this.partnerStarted = false,
+    this.isEndingSession = false,
+    this.isMarkingNoShow = false,
+    this.showFiveMinuteWarning = false,
+    this.showTimeUpModal = false,
+    this.errorMessage,
+  });
+
+  bool get isSessionActive =>
+      status == ActiveSessionStatus.active && sessionStartTime != null;
+
+  bool get bothStarted => currentUserStarted && partnerStarted;
+
+  int get sessionDurationMinutes => ((swap?.duration ?? 1.0) * 60).toInt();
+
+  ActiveSessionState copyWith({
+    ActiveSessionStatus? status,
+    SwapModel? swap,
+    DateTime? sessionStartTime,
+    bool? currentUserStarted,
+    bool? partnerStarted,
+    bool? isEndingSession,
+    bool? isMarkingNoShow,
+    bool? showFiveMinuteWarning,
+    bool? showTimeUpModal,
+    String? errorMessage,
+    bool clearError = false,
+  }) {
+    return ActiveSessionState(
+      status: status ?? this.status,
+      swap: swap ?? this.swap,
+      sessionStartTime: sessionStartTime ?? this.sessionStartTime,
+      currentUserStarted: currentUserStarted ?? this.currentUserStarted,
+      partnerStarted: partnerStarted ?? this.partnerStarted,
+      isEndingSession: isEndingSession ?? this.isEndingSession,
+      isMarkingNoShow: isMarkingNoShow ?? this.isMarkingNoShow,
+      showFiveMinuteWarning: showFiveMinuteWarning ?? this.showFiveMinuteWarning,
+      showTimeUpModal: showTimeUpModal ?? this.showTimeUpModal,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+    );
+  }
+}
+
+/// Notifier for active session management
+@riverpod
+class ActiveSessionNotifier extends _$ActiveSessionNotifier {
+  @override
+  ActiveSessionState build(String swapId, String currentUserId) {
+    // Load swap data
+    _loadSwap();
+    return const ActiveSessionState();
+  }
+
+  Future<void> _loadSwap() async {
+    final swapRepo = ref.read(swapRepositoryProvider);
+    final result = await swapRepo.getSwapById(swapId);
+
+    result.fold(
+      (failure) {
+        state = state.copyWith(
+          status: ActiveSessionStatus.error,
+          errorMessage: failure.message ?? 'Failed to load session',
+        );
+      },
+      (swap) {
+        _updateStateFromSwap(swap);
+      },
+    );
+  }
+
+  void _updateStateFromSwap(SwapModel swap) {
+    final session = swap.session;
+    final isRequester = currentUserId == swap.requesterId;
+
+    final currentUserStarted =
+        isRequester ? (session?.requesterStarted ?? false) : (session?.providerStarted ?? false);
+    final partnerStarted =
+        isRequester ? (session?.providerStarted ?? false) : (session?.requesterStarted ?? false);
+
+    ActiveSessionStatus newStatus;
+
+    if (swap.status == SwapStatus.completed) {
+      newStatus = ActiveSessionStatus.ended;
+    } else if (swap.status == SwapStatus.cancelled) {
+      newStatus = ActiveSessionStatus.cancelled;
+    } else if (swap.status == SwapStatus.inProgress && session?.actualStartTime != null) {
+      newStatus = ActiveSessionStatus.active;
+    } else if (swap.status == SwapStatus.scheduled) {
+      newStatus = ActiveSessionStatus.waitingForPartner;
+    } else {
+      newStatus = ActiveSessionStatus.loading;
+    }
+
+    state = state.copyWith(
+      status: newStatus,
+      swap: swap,
+      sessionStartTime: session?.actualStartTime,
+      currentUserStarted: currentUserStarted,
+      partnerStarted: partnerStarted,
+    );
+  }
+
+  /// Called when user taps "Start Session"
+  Future<bool> startSession() async {
+    if (state.currentUserStarted) return true;
+
+    final swapRepo = ref.read(swapRepositoryProvider);
+    final result = await swapRepo.startSession(swapId, currentUserId);
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          errorMessage: failure.message ?? 'Failed to start session',
+        );
+        return false;
+      },
+      (_) {
+        state = state.copyWith(currentUserStarted: true, clearError: true);
+        // Reload to check if both started
+        _loadSwap();
+        return true;
+      },
+    );
+  }
+
+  /// Called when user taps "End Session"
+  Future<bool> endSession() async {
+    state = state.copyWith(isEndingSession: true);
+
+    final swapRepo = ref.read(swapRepositoryProvider);
+    final result = await swapRepo.completeSwap(swapId);
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          isEndingSession: false,
+          errorMessage: failure.message ?? 'Failed to end session',
+        );
+        return false;
+      },
+      (_) {
+        state = state.copyWith(
+          status: ActiveSessionStatus.ended,
+          isEndingSession: false,
+        );
+        return true;
+      },
+    );
+  }
+
+  /// Called when user marks partner as no-show
+  Future<bool> markAsNoShow() async {
+    state = state.copyWith(isMarkingNoShow: true);
+
+    final swapRepo = ref.read(swapRepositoryProvider);
+    final result = await swapRepo.cancelSwap(
+      swapId,
+      currentUserId,
+      'Partner did not show up',
+    );
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          isMarkingNoShow: false,
+          errorMessage: failure.message ?? 'Failed to mark as no-show',
+        );
+        return false;
+      },
+      (_) {
+        state = state.copyWith(
+          status: ActiveSessionStatus.cancelled,
+          isMarkingNoShow: false,
+        );
+        return true;
+      },
+    );
+  }
+
+  /// Called when 5 minutes remaining
+  void showFiveMinuteWarning() {
+    if (!state.showFiveMinuteWarning) {
+      state = state.copyWith(showFiveMinuteWarning: true);
+    }
+  }
+
+  /// Dismiss 5 minute warning
+  void dismissFiveMinuteWarning() {
+    state = state.copyWith(showFiveMinuteWarning: false);
+  }
+
+  /// Called when session time is complete
+  void showTimeUpModal() {
+    if (!state.showTimeUpModal) {
+      state = state.copyWith(showTimeUpModal: true);
+    }
+  }
+
+  /// Dismiss time up modal (continue session)
+  void dismissTimeUpModal() {
+    state = state.copyWith(showTimeUpModal: false);
+  }
+
+  /// Refresh swap data
+  Future<void> refresh() async {
+    await _loadSwap();
+  }
+}
+
+/// Stream provider for real-time swap updates
+@riverpod
+Stream<SwapModel?> swapStream(SwapStreamRef ref, String swapId) {
+  final swapRepo = ref.watch(swapRepositoryProvider);
+
+  // Use the getUserSwaps stream and filter for our swap
+  // This is a workaround since we don't have a single-document stream
+  return swapRepo.getUserSwaps('').map((swaps) {
+    try {
+      return swaps.firstWhere((s) => s.id == swapId);
+    } catch (_) {
+      return null;
+    }
+  });
+}
+
+/// Get partner info from swap
+({String name, String? photo, String skillName}) getPartnerInfo(
+  SwapModel swap,
+  String currentUserId,
+) {
+  final isRequester = currentUserId == swap.requesterId;
+
+  return (
+    name: isRequester ? swap.providerName : swap.requesterName,
+    photo: isRequester ? swap.providerPhoto : swap.requesterPhoto,
+    skillName: isRequester
+        ? swap.requesterWants.skillName
+        : swap.requesterOffers.skillName,
+  );
+}
+
+/// Get current user's skill (what they're teaching)
+String getCurrentUserSkill(SwapModel swap, String currentUserId) {
+  final isRequester = currentUserId == swap.requesterId;
+  return isRequester
+      ? swap.requesterOffers.skillName
+      : swap.requesterWants.skillName;
+}
+
+/// Format duration for display
+String formatDurationDisplay(double hours) {
+  if (hours == 1.0) return '1 hour';
+  if (hours == 0.5) return '30 minutes';
+  if (hours < 1) return '${(hours * 60).toInt()} minutes';
+  return '${hours.toStringAsFixed(hours.truncateToDouble() == hours ? 0 : 1)} hours';
+}

@@ -168,6 +168,148 @@ class _SwapByIdProviderElement
   String get swapId => (origin as SwapByIdProvider).swapId;
 }
 
+String _$swapStreamHash() => r'718ca9b0c8485850b587f1cd9263e030c878045a';
+
+/// Stream provider for real-time swap updates
+///
+/// Copied from [swapStream].
+@ProviderFor(swapStream)
+const swapStreamProvider = SwapStreamFamily();
+
+/// Stream provider for real-time swap updates
+///
+/// Copied from [swapStream].
+class SwapStreamFamily extends Family<AsyncValue<SwapModel?>> {
+  /// Stream provider for real-time swap updates
+  ///
+  /// Copied from [swapStream].
+  const SwapStreamFamily();
+
+  /// Stream provider for real-time swap updates
+  ///
+  /// Copied from [swapStream].
+  SwapStreamProvider call(
+    String swapId,
+  ) {
+    return SwapStreamProvider(
+      swapId,
+    );
+  }
+
+  @override
+  SwapStreamProvider getProviderOverride(
+    covariant SwapStreamProvider provider,
+  ) {
+    return call(
+      provider.swapId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'swapStreamProvider';
+}
+
+/// Stream provider for real-time swap updates
+///
+/// Copied from [swapStream].
+class SwapStreamProvider extends AutoDisposeStreamProvider<SwapModel?> {
+  /// Stream provider for real-time swap updates
+  ///
+  /// Copied from [swapStream].
+  SwapStreamProvider(
+    String swapId,
+  ) : this._internal(
+          (ref) => swapStream(
+            ref as SwapStreamRef,
+            swapId,
+          ),
+          from: swapStreamProvider,
+          name: r'swapStreamProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$swapStreamHash,
+          dependencies: SwapStreamFamily._dependencies,
+          allTransitiveDependencies:
+              SwapStreamFamily._allTransitiveDependencies,
+          swapId: swapId,
+        );
+
+  SwapStreamProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.swapId,
+  }) : super.internal();
+
+  final String swapId;
+
+  @override
+  Override overrideWith(
+    Stream<SwapModel?> Function(SwapStreamRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: SwapStreamProvider._internal(
+        (ref) => create(ref as SwapStreamRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        swapId: swapId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeStreamProviderElement<SwapModel?> createElement() {
+    return _SwapStreamProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SwapStreamProvider && other.swapId == swapId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, swapId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin SwapStreamRef on AutoDisposeStreamProviderRef<SwapModel?> {
+  /// The parameter `swapId` of this provider.
+  String get swapId;
+}
+
+class _SwapStreamProviderElement
+    extends AutoDisposeStreamProviderElement<SwapModel?> with SwapStreamRef {
+  _SwapStreamProviderElement(super.provider);
+
+  @override
+  String get swapId => (origin as SwapStreamProvider).swapId;
+}
+
 String _$scheduleSessionNotifierHash() =>
     r'94512561f0f2780a0a4a804b759d78354f32ad65';
 
@@ -326,6 +468,190 @@ class _ScheduleSessionNotifierProviderElement
 
   @override
   String get swapId => (origin as ScheduleSessionNotifierProvider).swapId;
+}
+
+String _$activeSessionNotifierHash() =>
+    r'7443972b5088e1a0a47ce542a1be103404b9cd39';
+
+abstract class _$ActiveSessionNotifier
+    extends BuildlessAutoDisposeNotifier<ActiveSessionState> {
+  late final String swapId;
+  late final String currentUserId;
+
+  ActiveSessionState build(
+    String swapId,
+    String currentUserId,
+  );
+}
+
+/// Notifier for active session management
+///
+/// Copied from [ActiveSessionNotifier].
+@ProviderFor(ActiveSessionNotifier)
+const activeSessionNotifierProvider = ActiveSessionNotifierFamily();
+
+/// Notifier for active session management
+///
+/// Copied from [ActiveSessionNotifier].
+class ActiveSessionNotifierFamily extends Family<ActiveSessionState> {
+  /// Notifier for active session management
+  ///
+  /// Copied from [ActiveSessionNotifier].
+  const ActiveSessionNotifierFamily();
+
+  /// Notifier for active session management
+  ///
+  /// Copied from [ActiveSessionNotifier].
+  ActiveSessionNotifierProvider call(
+    String swapId,
+    String currentUserId,
+  ) {
+    return ActiveSessionNotifierProvider(
+      swapId,
+      currentUserId,
+    );
+  }
+
+  @override
+  ActiveSessionNotifierProvider getProviderOverride(
+    covariant ActiveSessionNotifierProvider provider,
+  ) {
+    return call(
+      provider.swapId,
+      provider.currentUserId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'activeSessionNotifierProvider';
+}
+
+/// Notifier for active session management
+///
+/// Copied from [ActiveSessionNotifier].
+class ActiveSessionNotifierProvider extends AutoDisposeNotifierProviderImpl<
+    ActiveSessionNotifier, ActiveSessionState> {
+  /// Notifier for active session management
+  ///
+  /// Copied from [ActiveSessionNotifier].
+  ActiveSessionNotifierProvider(
+    String swapId,
+    String currentUserId,
+  ) : this._internal(
+          () => ActiveSessionNotifier()
+            ..swapId = swapId
+            ..currentUserId = currentUserId,
+          from: activeSessionNotifierProvider,
+          name: r'activeSessionNotifierProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$activeSessionNotifierHash,
+          dependencies: ActiveSessionNotifierFamily._dependencies,
+          allTransitiveDependencies:
+              ActiveSessionNotifierFamily._allTransitiveDependencies,
+          swapId: swapId,
+          currentUserId: currentUserId,
+        );
+
+  ActiveSessionNotifierProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.swapId,
+    required this.currentUserId,
+  }) : super.internal();
+
+  final String swapId;
+  final String currentUserId;
+
+  @override
+  ActiveSessionState runNotifierBuild(
+    covariant ActiveSessionNotifier notifier,
+  ) {
+    return notifier.build(
+      swapId,
+      currentUserId,
+    );
+  }
+
+  @override
+  Override overrideWith(ActiveSessionNotifier Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: ActiveSessionNotifierProvider._internal(
+        () => create()
+          ..swapId = swapId
+          ..currentUserId = currentUserId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        swapId: swapId,
+        currentUserId: currentUserId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeNotifierProviderElement<ActiveSessionNotifier, ActiveSessionState>
+      createElement() {
+    return _ActiveSessionNotifierProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ActiveSessionNotifierProvider &&
+        other.swapId == swapId &&
+        other.currentUserId == currentUserId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, swapId.hashCode);
+    hash = _SystemHash.combine(hash, currentUserId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin ActiveSessionNotifierRef
+    on AutoDisposeNotifierProviderRef<ActiveSessionState> {
+  /// The parameter `swapId` of this provider.
+  String get swapId;
+
+  /// The parameter `currentUserId` of this provider.
+  String get currentUserId;
+}
+
+class _ActiveSessionNotifierProviderElement
+    extends AutoDisposeNotifierProviderElement<ActiveSessionNotifier,
+        ActiveSessionState> with ActiveSessionNotifierRef {
+  _ActiveSessionNotifierProviderElement(super.provider);
+
+  @override
+  String get swapId => (origin as ActiveSessionNotifierProvider).swapId;
+  @override
+  String get currentUserId =>
+      (origin as ActiveSessionNotifierProvider).currentUserId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

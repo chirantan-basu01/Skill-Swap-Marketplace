@@ -24,6 +24,7 @@ import 'package:skill_swap_marketplace/features/profile/presentation/screens/edi
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/edit_skills_wanted_screen.dart';
 import 'package:skill_swap_marketplace/features/search/presentation/screens/search_screen.dart';
 import 'package:skill_swap_marketplace/features/session/presentation/screens/schedule_session_screen.dart';
+import 'package:skill_swap_marketplace/features/session/presentation/screens/active_session_screen.dart';
 
 part 'app_router.g.dart';
 
@@ -197,7 +198,7 @@ class ActiveSessionRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return _PlaceholderScreen(title: 'Active Session: $swapId');
+    return ActiveSessionScreen(swapId: swapId);
   }
 }
 

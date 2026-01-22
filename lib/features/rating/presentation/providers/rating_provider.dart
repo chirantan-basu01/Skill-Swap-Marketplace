@@ -94,6 +94,11 @@ class RatingNotifier extends _$RatingNotifier {
       return false;
     }
 
+    // Capture stars and tags before any state changes
+    final starsToSubmit = state.stars;
+    final tagsToSubmit = state.selectedTags.toList();
+    final reviewToSubmit = state.review;
+
     state = state.copyWith(status: RatingSubmitStatus.loading, clearError: true);
 
     final authRepo = ref.read(authRepositoryProvider);
@@ -109,81 +114,87 @@ class RatingNotifier extends _$RatingNotifier {
 
     final swapRepo = ref.read(swapRepositoryProvider);
 
-    // Submit the rating
+    // Submit the rating to swap document
+    print('submitRating: Submitting rating - stars=$starsToSubmit, tags=$tagsToSubmit');
     final result = await swapRepo.addRating(
       swapId: swapId,
       oderId: currentUser.uid,
-      stars: state.stars,
-      tags: state.selectedTags.toList(),
-      review: state.review.isNotEmpty ? state.review : null,
+      stars: starsToSubmit,
+      tags: tagsToSubmit,
+      review: reviewToSubmit.isNotEmpty ? reviewToSubmit : null,
     );
 
-    return result.fold(
-      (failure) {
+    // Handle rating submission result
+    if (result.isLeft()) {
+      final failure = result.getLeft().toNullable()!;
+      state = state.copyWith(
+        status: RatingSubmitStatus.error,
+        errorMessage: failure.message,
+      );
+      return false;
+    }
+
+    print('submitRating: Rating submitted to swap document successfully');
+
+    // Get updated swap to check if partner has rated
+    final swapResult = await swapRepo.getSwapById(swapId);
+
+    if (swapResult.isLeft()) {
+      final failure = swapResult.getLeft().toNullable()!;
+      state = state.copyWith(
+        status: RatingSubmitStatus.error,
+        errorMessage: failure.message,
+      );
+      return false;
+    }
+
+    final updatedSwap = swapResult.getRight().toNullable()!;
+    final partnerId = currentUser.uid == swap.requesterId
+        ? swap.providerId
+        : swap.requesterId;
+    final partnerHasRated = updatedSwap.ratings.containsKey(partnerId);
+
+    print('submitRating: partnerId=$partnerId, partnerHasRated=$partnerHasRated');
+
+    if (partnerHasRated) {
+      // Both have rated - process credit transfer
+      print('submitRating: Both users have rated. Processing credits...');
+      print('submitRating: Swap creditAmount: ${swap.creditAmount}');
+      final creditResult = await _processCredits(swap, currentUser.uid);
+
+      if (creditResult != null) {
+        print('submitRating: Credits processed: ${creditResult.credits}, newBalance: ${creditResult.newBalance}');
         state = state.copyWith(
-          status: RatingSubmitStatus.error,
-          errorMessage: failure.message,
+          status: RatingSubmitStatus.complete,
+          partnerHasRated: true,
+          creditsEarned: creditResult.credits,
+          newBalance: creditResult.newBalance,
         );
-        return false;
-      },
-      (_) async {
-        // Check if partner has also rated
-        final swapResult = await swapRepo.getSwapById(swapId);
-
-        return swapResult.fold(
-          (failure) {
-            state = state.copyWith(
-              status: RatingSubmitStatus.error,
-              errorMessage: failure.message,
-            );
-            return false;
-          },
-          (updatedSwap) async {
-            final partnerId = currentUser.uid == swap.requesterId
-                ? swap.providerId
-                : swap.requesterId;
-            final partnerHasRated = updatedSwap.ratings.containsKey(partnerId);
-
-            if (partnerHasRated) {
-              // Both have rated - process credit transfer
-              print('Both users have rated. Processing credits...');
-              print('Swap creditAmount: ${swap.creditAmount}');
-              final creditResult = await _processCredits(swap, currentUser.uid);
-
-              if (creditResult != null) {
-                print('Credits processed: ${creditResult.credits}, newBalance: ${creditResult.newBalance}');
-                state = state.copyWith(
-                  status: RatingSubmitStatus.complete,
-                  partnerHasRated: true,
-                  creditsEarned: creditResult.credits,
-                  newBalance: creditResult.newBalance,
-                );
-              } else {
-                state = state.copyWith(
-                  status: RatingSubmitStatus.complete,
-                  partnerHasRated: true,
-                );
-              }
-            } else {
-              // Waiting for partner
-              state = state.copyWith(
-                status: RatingSubmitStatus.waitingForPartner,
-                partnerHasRated: false,
-              );
-            }
-
-            // Update user rating stats
-            await _updateUserRatingStats(
-              ratedUserId: partnerId,
-              stars: state.stars,
-              tags: state.selectedTags.toList(),
-            );
-
-            return true;
-          },
+      } else {
+        state = state.copyWith(
+          status: RatingSubmitStatus.complete,
+          partnerHasRated: true,
         );
-      },
+      }
+    } else {
+      // Waiting for partner
+      print('submitRating: Waiting for partner to rate');
+      state = state.copyWith(
+        status: RatingSubmitStatus.waitingForPartner,
+        partnerHasRated: false,
+      );
+    }
+
+    // Update partner's rating stats (when I rate someone, their rating increases)
+    print('submitRating: Updating rating stats for partner $partnerId');
+    await _updateUserRatingStats(
+      ratedUserId: partnerId,
+      stars: starsToSubmit,
+      tags: tagsToSubmit,
     );
+
+    print('submitRating: Complete!');
+    return true;
   }
 
   Future<({double credits, double newBalance})?> _processCredits(
@@ -266,14 +277,22 @@ class RatingNotifier extends _$RatingNotifier {
     required List<String> tags,
   }) async {
     try {
+      print('_updateUserRatingStats: Updating rating for user $ratedUserId');
+      print('_updateUserRatingStats: stars=$stars, tags=$tags');
+
       final firestore = FirebaseFirestore.instance;
       final userRef = firestore.collection(FirestoreCollections.users).doc(ratedUserId);
 
       final userDoc = await userRef.get();
-      if (!userDoc.exists) return;
+      if (!userDoc.exists) {
+        print('_updateUserRatingStats: User document does not exist!');
+        return;
+      }
 
       final userData = userDoc.data()!;
       final currentRating = userData[UserFields.rating] as Map<String, dynamic>? ?? {};
+      print('_updateUserRatingStats: Current rating data: $currentRating');
+
       final rawAverage = currentRating['average'];
       final currentAverage = (rawAverage is num) ? rawAverage.toDouble() : 0.0;
       final rawCount = currentRating['count'];
@@ -288,6 +307,8 @@ class RatingNotifier extends _$RatingNotifier {
       final newCount = currentCount + 1;
       final newAverage = ((currentAverage * currentCount) + stars) / newCount;
 
+      print('_updateUserRatingStats: New average=$newAverage, newCount=$newCount');
+
       // Update tag counts
       for (final tag in tags) {
         currentTags[tag] = (currentTags[tag] ?? 0) + 1;
@@ -299,8 +320,12 @@ class RatingNotifier extends _$RatingNotifier {
         '${UserFields.rating}.tags': currentTags,
         UserFields.updatedAt: Timestamp.now(),
       });
-    } catch (e) {
-      // Silently fail - rating was still submitted
+
+      print('_updateUserRatingStats: Successfully updated rating for $ratedUserId');
+    } catch (e, stack) {
+      print('_updateUserRatingStats ERROR: $e');
+      print('_updateUserRatingStats Stack: $stack');
+      // Continue - rating was still submitted to swap document
     }
   }
 

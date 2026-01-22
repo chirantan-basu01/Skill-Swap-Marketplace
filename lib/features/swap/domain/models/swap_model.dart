@@ -25,6 +25,22 @@ enum SwapStatus {
   cancelled,
 }
 
+/// Extension to get the JSON value for SwapStatus
+extension SwapStatusX on SwapStatus {
+  /// Returns the JSON string value (matching @JsonValue annotation)
+  String get jsonValue {
+    return switch (this) {
+      SwapStatus.pending => 'pending',
+      SwapStatus.accepted => 'accepted',
+      SwapStatus.declined => 'declined',
+      SwapStatus.scheduled => 'scheduled',
+      SwapStatus.inProgress => 'in_progress',
+      SwapStatus.completed => 'completed',
+      SwapStatus.cancelled => 'cancelled',
+    };
+  }
+}
+
 /// Session details for a scheduled swap
 @freezed
 class SwapSession with _$SwapSession {

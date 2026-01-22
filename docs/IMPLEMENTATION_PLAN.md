@@ -22,7 +22,7 @@
 
 **Progress: Phase 1 - 100% complete (8/8 steps) ✅**
 **Progress: Phase 2 - 100% complete (5/5 steps) ✅**
-**Progress: Phase 3 - 33% complete (1/3 steps) 🔄**
+**Progress: Phase 3 - 67% complete (2/3 steps) 🔄**
 
 ### Recent Bug Fixes & Improvements
 - Fixed stale user data when switching accounts (providers now watch `authStateChangesProvider`)
@@ -238,12 +238,27 @@ Allow users to update their skills after initial profile setup.
 - `swapByIdProvider` - Fetch single swap by ID
 - `showScheduleSessionSheet()` - Alternative bottom sheet presentation
 
-### ⬜ Step 3.2: Active Session
+### ✅ Step 3.2: Active Session - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Active session screen | `lib/features/session/presentation/screens/active_session_screen.dart` |
-| ⬜ | Session timer widget | `lib/features/session/presentation/widgets/session_timer.dart` |
-| ⬜ | Video link button | `lib/features/session/presentation/widgets/video_link_button.dart` |
+| ✅ | Active session screen | `lib/features/session/presentation/screens/active_session_screen.dart` |
+| ✅ | Session timer widget | `lib/features/session/presentation/widgets/session_timer.dart` |
+| ✅ | Video link button | `lib/features/session/presentation/widgets/video_link_button.dart` |
+
+**Components Created:**
+- `ActiveSessionScreen` - Full-screen interface with multiple states (waiting, active, ended, cancelled)
+- `SessionTimer` - Circular timer with animated border, progress bar, time labels
+- `GracePeriodTimer` - Countdown timer for waiting state (15 min grace period)
+- `WaitingDots` - Animated "Waiting..." text with dots
+- `VideoLinkButton` - Primary button to open video call via url_launcher
+- `OpenChatButton` - Secondary button to navigate to chat
+- `StartSessionButton` - Button for users to mark themselves ready
+- `EndSessionButton` - Text button to end session
+- `MarkNoShowButton` - Button for no-show handling
+- `ReportIssueButton` - Link to report issues
+- `ActiveSessionNotifier` - Riverpod state management for session lifecycle
+- Session states: loading, waitingForPartner, active, ended, cancelled
+- 5-minute warning banner, Time's up modal, End session confirmation dialog
 
 ### ⬜ Step 3.3: Local Notifications
 | Status | Task | Files |
@@ -352,7 +367,7 @@ Week 11-12: Sessions & Safety
 
 2. **Phase 3: Session Management** - **IN PROGRESS**
    - ~~Step 3.1: Scheduling~~ ✅ DONE (schedule session screen with calendar, time picker, video link)
-   - Step 3.2: Active Session - Session screen with timer and video link
+   - ~~Step 3.2: Active Session~~ ✅ DONE (session screen with timer, video link, multiple states)
    - Step 3.3: Local Notifications - Session reminders (24h, 1h, 15m)
 
 3. **Note**: ScheduleSessionRoute and ActiveSessionRoute exist but use placeholder screens

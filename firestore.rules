@@ -16,6 +16,13 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
+    /// Check if update only modifies rating-related fields (for rating system)
+    function isRatingUpdate() {
+      return isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['rating', 'updatedAt']);
+    }
+
     // ========================================================================
     // USERS COLLECTION
     // ========================================================================
@@ -23,9 +30,12 @@ service cloud.firestore {
       // Anyone signed in can read user profiles (for discovery)
       allow read: if isSignedIn();
 
-      // Users can only create/update their own profile
+      // Users can only create their own profile
       allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+
+      // Users can update their own profile
+      // OR any signed-in user can update rating fields (for rating system)
+      allow update: if isOwner(userId) || isRatingUpdate();
 
       // No direct delete allowed
       allow delete: if false;
