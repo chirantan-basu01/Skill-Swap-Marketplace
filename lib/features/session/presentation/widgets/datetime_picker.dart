@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Calendar widget for selecting a date
 class SessionCalendar extends StatefulWidget {
@@ -470,7 +471,7 @@ class VideoLinkInput extends StatelessWidget {
           ),
         ),
         const SizedBox(height: Dimensions.sm),
-        // Quick links
+        // Quick links to create video meetings
         Row(
           children: [
             Text(
@@ -480,37 +481,18 @@ class VideoLinkInput extends StatelessWidget {
                 color: AppColors.gray500,
               ),
             ),
-            TextButton(
-              onPressed: () => _launchUrl('https://meet.google.com/new'),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text(
-                'Google Meet',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.primaryBlue,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            _VideoProviderButton(
+              label: 'Google Meet',
+              icon: Icons.video_call,
+              color: const Color(0xFF00897B), // Google Meet teal
+              onTap: () => _launchUrl('https://meet.google.com/new'),
             ),
-            TextButton(
-              onPressed: () => _launchUrl('https://zoom.us/start/videomeeting'),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: const Text(
-                'Zoom',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.primaryBlue,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            const SizedBox(width: 8),
+            _VideoProviderButton(
+              label: 'Zoom',
+              icon: Icons.videocam,
+              color: const Color(0xFF2D8CFF), // Zoom blue
+              onTap: () => _launchUrl('https://zoom.us/start/videomeeting'),
             ),
           ],
         ),
@@ -518,10 +500,59 @@ class VideoLinkInput extends StatelessWidget {
     );
   }
 
-  void _launchUrl(String url) {
-    // Note: In a real app, use url_launcher package
-    // For now, just show a snackbar indicating what would happen
-    debugPrint('Would launch: $url');
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('Could not launch: $url');
+    }
+  }
+}
+
+/// Button for video provider quick links
+class _VideoProviderButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _VideoProviderButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Dimensions.radiusSm),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(Dimensions.radiusSm),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

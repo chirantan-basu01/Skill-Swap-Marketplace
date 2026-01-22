@@ -14,6 +14,7 @@ import 'package:skill_swap_marketplace/features/home/presentation/providers/user
 import 'package:skill_swap_marketplace/features/skills/domain/models/skill_model.dart';
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
+import 'package:skill_swap_marketplace/features/user/presentation/providers/user_reviews_provider.dart';
 
 /// Provider for fetching a user by ID
 final userByIdProvider =
@@ -151,8 +152,8 @@ class UserProfileViewScreen extends ConsumerWidget {
               // Availability
               _buildAvailabilitySection(user),
 
-              // Reviews section (placeholder for now)
-              _buildReviewsSection(user),
+              // Reviews section
+              _buildReviewsSection(context, ref, user),
 
               // Rating Tags
               if (user.rating.tags.isNotEmpty) _buildRatingTags(user),
@@ -619,16 +620,19 @@ class UserProfileViewScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildReviewsSection(UserModel user) {
+  Widget _buildReviewsSection(BuildContext context, WidgetRef ref, UserModel user) {
     if (user.rating.count == 0) {
       return const SizedBox.shrink();
     }
+
+    final reviewsAsync = ref.watch(userReviewsProvider(user.uid));
 
     return _Section(
       title: 'Reviews (${user.rating.count})',
       trailing: GestureDetector(
         onTap: () {
           // Navigate to all reviews
+          _showAllReviews(context, user, reviewsAsync.valueOrNull ?? []);
         },
         child: const Text(
           'See All',
@@ -639,24 +643,122 @@ class UserProfileViewScreen extends ConsumerWidget {
           ),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(Dimensions.md),
-        decoration: BoxDecoration(
-          color: AppColors.gray50,
-          borderRadius: BorderRadius.circular(Dimensions.radiusMd),
-        ),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Reviews will be shown here',
-              style: TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                fontStyle: FontStyle.italic,
+      child: reviewsAsync.when(
+        data: (reviews) {
+          if (reviews.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(Dimensions.md),
+              decoration: BoxDecoration(
+                color: AppColors.gray50,
+                borderRadius: BorderRadius.circular(Dimensions.radiusMd),
               ),
+              child: const Text(
+                'No reviews yet',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            );
+          }
+
+          // Show first 2 reviews
+          final displayReviews = reviews.take(2).toList();
+          return Column(
+            children: displayReviews.map((review) => _ReviewCard(review: review)).toList(),
+          );
+        },
+        loading: () => const Center(
+          child: Padding(
+            padding: EdgeInsets.all(Dimensions.md),
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+        error: (_, __) => Container(
+          padding: const EdgeInsets.all(Dimensions.md),
+          decoration: BoxDecoration(
+            color: AppColors.gray50,
+            borderRadius: BorderRadius.circular(Dimensions.radiusMd),
+          ),
+          child: const Text(
+            'Unable to load reviews',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+              fontStyle: FontStyle.italic,
             ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAllReviews(BuildContext context, UserModel user, List<UserReview> reviews) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLg)),
+          ),
+          child: Column(
+            children: [
+              // Handle
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.gray300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: Dimensions.md),
+              // Title
+              Text(
+                'Reviews for ${user.displayName}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              Text(
+                '${reviews.length} reviews',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: Dimensions.md),
+              // Reviews list
+              Expanded(
+                child: reviews.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No reviews yet',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(Dimensions.screenPaddingH),
+                        itemCount: reviews.length,
+                        itemBuilder: (context, index) => _ReviewCard(review: reviews[index]),
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1223,5 +1325,141 @@ class _AvailabilityChip extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Review card widget
+class _ReviewCard extends StatelessWidget {
+  final UserReview review;
+
+  const _ReviewCard({required this.review});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: Dimensions.sm),
+      padding: const EdgeInsets.all(Dimensions.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(Dimensions.radiusMd),
+        border: Border.all(color: AppColors.gray200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: Reviewer info and stars
+          Row(
+            children: [
+              UserAvatar(
+                imageUrl: review.reviewerPhoto,
+                name: review.reviewerName,
+                size: AvatarSize.sm,
+              ),
+              const SizedBox(width: Dimensions.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.reviewerName,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      review.skillName,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Stars
+              Row(
+                children: List.generate(5, (index) {
+                  return Icon(
+                    index < review.stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                    size: 16,
+                    color: index < review.stars ? AppColors.warning : AppColors.gray300,
+                  );
+                }),
+              ),
+            ],
+          ),
+
+          // Review text
+          if (review.review.isNotEmpty) ...[
+            const SizedBox(height: Dimensions.sm),
+            Text(
+              '"${review.review}"',
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                fontStyle: FontStyle.italic,
+                height: 1.4,
+              ),
+            ),
+          ],
+
+          // Tags
+          if (review.tags.isNotEmpty) ...[
+            const SizedBox(height: Dimensions.sm),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: review.tags.map((tag) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primarySurface,
+                    borderRadius: BorderRadius.circular(Dimensions.radiusSm),
+                  ),
+                  child: Text(
+                    tag,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.primaryBlue,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+
+          // Date
+          const SizedBox(height: Dimensions.sm),
+          Text(
+            _formatDate(review.createdAt),
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.textTertiary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+
+    if (diff.inDays == 0) {
+      return 'Today';
+    } else if (diff.inDays == 1) {
+      return 'Yesterday';
+    } else if (diff.inDays < 7) {
+      return '${diff.inDays} days ago';
+    } else if (diff.inDays < 30) {
+      return '${(diff.inDays / 7).floor()} weeks ago';
+    } else {
+      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return '${months[date.month - 1]} ${date.day}, ${date.year}';
+    }
   }
 }
