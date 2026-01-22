@@ -33,15 +33,12 @@ class ChatRepositoryImpl implements ChatRepository {
     String? wantedSkillName,
   }) async {
     try {
-      // Check if chat already exists for this swap
-      final existingChat = await getChatBySwapId(swapId);
+      // Check if chat already exists between these two users
+      final existingChat = await getChatByParticipants(userId1, userId2);
 
       return existingChat.fold(
         (failure) => left(failure),
-        (chat) {
-          if (chat != null) {
-            return right(chat);
-          }
+        (chat) async {
           // Create swap context if skills are provided
           SwapContext? swapContext;
           if (offeredSkillName != null && wantedSkillName != null) {
@@ -51,6 +48,22 @@ class ChatRepositoryImpl implements ChatRepository {
               status: 'accepted',
             );
           }
+
+          if (chat != null) {
+            // Update existing chat with new swap context
+            await _chatsCollection.doc(chat.id).update({
+              ChatFields.swapId: swapId,
+              if (swapContext != null) ChatFields.swapContext: swapContext.toJson(),
+              ChatFields.updatedAt: Timestamp.fromDate(DateTime.now()),
+            });
+            // Return updated chat
+            return right(chat.copyWith(
+              swapId: swapId,
+              swapContext: swapContext ?? chat.swapContext,
+              updatedAt: DateTime.now(),
+            ));
+          }
+
           // Create new chat
           return _createChat(
             swapId: swapId,
@@ -138,6 +151,31 @@ class ChatRepositoryImpl implements ChatRepository {
       }
 
       return right(ChatModel.fromJson(snapshot.docs.first.data()));
+    } on FirebaseException catch (e) {
+      return left(Failure.fromFirebase(e.code, e.message));
+    } catch (e) {
+      return left(Failure(message: e.toString()));
+    }
+  }
+
+  @override
+  FutureEither<ChatModel?> getChatByParticipants(String userId1, String userId2) async {
+    try {
+      // Query for chats where both users are participants
+      // Firestore arrayContains only supports single value, so we query for one
+      // and filter in-memory for the other
+      final snapshot = await _chatsCollection
+          .where(ChatFields.participants, arrayContains: userId1)
+          .get();
+
+      for (final doc in snapshot.docs) {
+        final participants = List<String>.from(doc.data()[ChatFields.participants] ?? []);
+        if (participants.contains(userId2)) {
+          return right(ChatModel.fromJson(doc.data()));
+        }
+      }
+
+      return right(null);
     } on FirebaseException catch (e) {
       return left(Failure.fromFirebase(e.code, e.message));
     } catch (e) {

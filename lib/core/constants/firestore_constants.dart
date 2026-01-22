@@ -95,6 +95,7 @@ class ChatFields {
   static const String participants = 'participants';
   static const String participantInfo = 'participantInfo';
   static const String swapId = 'swapId';
+  static const String swapContext = 'swapContext';
   static const String lastMessage = 'lastMessage';
   static const String unreadCount = 'unreadCount';
   static const String createdAt = 'createdAt';

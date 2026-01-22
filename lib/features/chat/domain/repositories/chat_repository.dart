@@ -24,6 +24,9 @@ abstract class ChatRepository {
   /// Get a chat by swap ID
   FutureEither<ChatModel?> getChatBySwapId(String swapId);
 
+  /// Get a chat by participants (user pair)
+  FutureEither<ChatModel?> getChatByParticipants(String userId1, String userId2);
+
   /// Stream of chats for a user (sorted by last message)
   Stream<List<ChatModel>> getUserChats(String userId);
 

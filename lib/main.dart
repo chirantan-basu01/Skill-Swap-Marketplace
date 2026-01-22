@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skill_swap_marketplace/app.dart';
 import 'package:skill_swap_marketplace/core/services/notification_service.dart';
+import 'package:skill_swap_marketplace/core/utils/rate_limiter.dart';
 import 'package:skill_swap_marketplace/firebase_options.dart';
 
 void main() async {
@@ -13,6 +15,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize SharedPreferences for rate limiting
+  final sharedPrefs = await SharedPreferences.getInstance();
 
   // Initialize notification service
   final notificationService = NotificationService();
@@ -41,8 +46,12 @@ void main() async {
   );
 
   runApp(
-    const ProviderScope(
-      child: App(),
+    ProviderScope(
+      overrides: [
+        // Provide SharedPreferences for rate limiting
+        sharedPreferencesProvider.overrideWithValue(sharedPrefs),
+      ],
+      child: const App(),
     ),
   );
 }

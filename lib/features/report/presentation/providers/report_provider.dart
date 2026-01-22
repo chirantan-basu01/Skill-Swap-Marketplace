@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:skill_swap_marketplace/core/utils/rate_limiter.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/report/data/repositories/report_repository_impl.dart';
 import 'package:skill_swap_marketplace/features/report/domain/models/report_model.dart';
@@ -55,6 +56,19 @@ class ReportNotifier extends _$ReportNotifier {
     String? messageId,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
+
+    // Check rate limit
+    final rateLimitResult = await ref.read(rateLimiterProvider).checkAndRecord(
+      RateLimitAction.submitReport,
+    );
+
+    if (!rateLimitResult.isAllowed) {
+      state = state.copyWith(
+        isLoading: false,
+        error: rateLimitResult.message,
+      );
+      return false;
+    }
 
     final authRepo = ref.read(authRepositoryProvider);
     final currentUser = authRepo.currentUser;

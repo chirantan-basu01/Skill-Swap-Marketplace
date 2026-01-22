@@ -188,7 +188,7 @@ class _IsUserBlockedProviderElement extends AutoDisposeProviderElement<bool>
   String get userId => (origin as IsUserBlockedProvider).userId;
 }
 
-String _$reportNotifierHash() => r'ee948550f955eb5f095bebc5720f02f76cc3c1e0';
+String _$reportNotifierHash() => r'ac6c4ba2c865d985c070aff20119fc4976cfbd91';
 
 /// Notifier for submitting reports
 ///

@@ -316,11 +316,23 @@ Allow users to update their skills after initial profile setup.
 - Added `blockedUsers` field to UserModel
 - Integrated report/block actions in user profile view popup menu
 
-### ⬜ Step 4.3: Anti-Abuse
+### ✅ Step 4.3: Anti-Abuse - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Rate limiting checks | `lib/core/utils/rate_limiter.dart` |
-| ⬜ | Firestore security rules | `firestore.rules` |
+| ✅ | Rate limiting checks | `lib/core/utils/rate_limiter.dart` |
+| ✅ | Firestore security rules | `firestore.rules` |
+
+**Components Created:**
+- `RateLimiter` - Client-side rate limiting with configurable actions
+- `RateLimitAction` enum with predefined limits (swap requests, messages, reports, etc.)
+- `sharedPreferencesProvider` and `rateLimiterProvider` for dependency injection
+- Enhanced Firestore security rules with:
+  - Block user validation (blocked users can't interact)
+  - Status transition validation for swaps
+  - String length validation
+  - Participant verification for chats and messages
+  - Immutable reports and transactions
+  - Catch-all deny rule for undefined collections
 
 ---
 

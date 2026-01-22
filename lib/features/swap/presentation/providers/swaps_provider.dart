@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skill_swap_marketplace/core/shared/models/failure.dart';
+import 'package:skill_swap_marketplace/core/utils/rate_limiter.dart';
 import 'package:skill_swap_marketplace/features/auth/domain/models/user_model.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/user_provider.dart';
@@ -204,6 +205,19 @@ class SwapRequestNotifier extends _$SwapRequestNotifier {
     }
 
     state = state.copyWith(status: SwapRequestStatus.loading, clearError: true);
+
+    // Check rate limit
+    final rateLimitResult = await ref.read(rateLimiterProvider).checkAndRecord(
+      RateLimitAction.swapRequest,
+    );
+
+    if (!rateLimitResult.isAllowed) {
+      state = state.copyWith(
+        status: SwapRequestStatus.error,
+        errorMessage: rateLimitResult.message,
+      );
+      return null;
+    }
 
     final authRepo = ref.read(authRepositoryProvider);
     final currentUser = authRepo.currentUser;

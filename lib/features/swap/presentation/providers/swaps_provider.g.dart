@@ -124,7 +124,7 @@ final completedSwapsProvider =
 // ignore: unused_element
 typedef CompletedSwapsRef = AutoDisposeStreamProviderRef<List<SwapModel>>;
 String _$swapRequestNotifierHash() =>
-    r'cd3fe7c57cbedd9dfdcf6831ec0f6eeb0590d429';
+    r'ad87986ae4fb086f96f6b59fe79c4b795ce57db6';
 
 /// Swap request notifier for creating new swap requests
 ///

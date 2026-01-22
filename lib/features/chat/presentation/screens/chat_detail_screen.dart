@@ -46,7 +46,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   @override
   void deactivate() {
     // Clear active chat when navigating away
-    ref.read(activeChatIdProvider.notifier).state = null;
+    // Capture notifier before deferring to avoid using ref after dispose
+    final notifier = ref.read(activeChatIdProvider.notifier);
+    Future.microtask(() {
+      notifier.state = null;
+    });
     super.deactivate();
   }
 
