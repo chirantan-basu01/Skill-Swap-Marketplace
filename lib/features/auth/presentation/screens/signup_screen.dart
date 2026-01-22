@@ -96,15 +96,21 @@ class _SignupFormState extends ConsumerState<_SignupForm> {
 
   Future<void> _signInWithGoogle() async {
     await ref.read(authNotifierProvider.notifier).signInWithGoogle();
-    _handleAuthResult();
+    _handleAuthResult(isGoogleSignIn: true);
   }
 
-  void _handleAuthResult() {
+  void _handleAuthResult({bool isGoogleSignIn = false}) {
     final authState = ref.read(authNotifierProvider);
 
     if (authState.status == AuthStatus.authenticated) {
-      // New user - go to profile setup
-      const SetupBasicInfoRoute().go(context);
+      if (isGoogleSignIn) {
+        // Google users are already verified - go to profile setup
+        const SetupBasicInfoRoute().go(context);
+      } else {
+        // Email users need verification - send email and go to verify screen
+        ref.read(authNotifierProvider.notifier).sendVerificationEmail();
+        const VerifyEmailRoute().go(context);
+      }
     } else if (authState.status == AuthStatus.error && authState.error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -70,7 +70,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     if (!mounted) return;
 
     if (currentUser != null) {
-      // User is authenticated - check if profile is complete
+      // Check if email is verified (skip for Google users)
+      final isGoogleUser = currentUser.providerData.any(
+        (provider) => provider.providerId == 'google.com',
+      );
+
+      if (!currentUser.emailVerified && !isGoogleUser) {
+        // Email not verified - go to verification screen
+        const VerifyEmailRoute().go(context);
+        return;
+      }
+
+      // User is authenticated and verified - check if profile is complete
       final isComplete = await ref.read(isProfileCompleteProvider.future);
 
       if (!mounted) return;

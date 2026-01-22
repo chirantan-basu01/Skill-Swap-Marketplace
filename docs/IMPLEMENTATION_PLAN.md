@@ -286,11 +286,19 @@ Allow users to update their skills after initial profile setup.
 ## Phase 4: Trust & Safety
 **Goal**: Basic platform integrity mechanisms.
 
-### ⬜ Step 4.1: Verification
+### ✅ Step 4.1: Verification - COMPLETED
 | Status | Task | Files |
 |--------|------|-------|
-| ⬜ | Email verification flow | `lib/features/auth/presentation/screens/verify_email_screen.dart` |
-| ⬜ | Verification gate | `lib/features/auth/presentation/widgets/verification_gate.dart` |
+| ✅ | Email verification flow | `lib/features/auth/presentation/screens/verify_email_screen.dart` |
+| ✅ | Verification gate | `lib/features/auth/presentation/widgets/verification_gate.dart` |
+
+**Components Created:**
+- `VerifyEmailScreen` - Screen showing "check your inbox" with resend button (60s cooldown)
+- `VerificationGate` - Widget to gate content behind email verification
+- `VerificationCheck` - Simpler widget for conditional rendering based on verification status
+- Auto-check verification on app resume (WidgetsBindingObserver)
+- Google Sign-In users skip verification (already verified by Google)
+- Integration with splash screen to redirect unverified users
 
 ### ⬜ Step 4.2: Reporting
 | Status | Task | Files |

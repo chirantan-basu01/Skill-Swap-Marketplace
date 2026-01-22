@@ -210,4 +210,35 @@ class AuthNotifier extends _$AuthNotifier {
   void clearError() {
     state = state.copyWith(error: null);
   }
+
+  /// Sends email verification to the current user
+  /// Returns true if email was sent successfully, false otherwise
+  Future<bool> sendVerificationEmail() async {
+    final result = await _authRepo.sendEmailVerification();
+    return result.isRight();
+  }
+
+  /// Reloads the current user from Firebase and checks if email is verified
+  /// Returns true if verified, false otherwise
+  Future<bool> reloadAndCheckVerification() async {
+    final result = await _authRepo.reloadUser();
+
+    if (result.isLeft()) {
+      return false;
+    }
+
+    // Get the refreshed user
+    final user = _authRepo.currentUser;
+    if (user == null) {
+      return false;
+    }
+
+    // Update state with refreshed user
+    state = AuthState(
+      status: AuthStatus.authenticated,
+      user: user,
+    );
+
+    return user.emailVerified;
+  }
 }

@@ -11,6 +11,7 @@ List<RouteBase> get $appRoutes => [
       $onboardingRoute,
       $loginRoute,
       $signupRoute,
+      $verifyEmailRoute,
       $setupBasicInfoRoute,
       $setupSkillsOfferedRoute,
       $setupSkillsWantedRoute,
@@ -117,6 +118,30 @@ extension $SignupRouteExtension on SignupRoute {
 
   String get location => GoRouteData.$location(
         '/signup',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $verifyEmailRoute => GoRouteData.$route(
+      path: '/verify-email',
+      name: 'verify-email',
+      factory: $VerifyEmailRouteExtension._fromState,
+    );
+
+extension $VerifyEmailRouteExtension on VerifyEmailRoute {
+  static VerifyEmailRoute _fromState(GoRouterState state) =>
+      const VerifyEmailRoute();
+
+  String get location => GoRouteData.$location(
+        '/verify-email',
       );
 
   void go(BuildContext context) => context.go(location);

@@ -5,6 +5,7 @@ import 'package:skill_swap_marketplace/features/auth/presentation/screens/login_
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/signup_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/screens/splash_screen.dart';
+import 'package:skill_swap_marketplace/features/auth/presentation/screens/verify_email_screen.dart';
 import 'package:skill_swap_marketplace/features/category/presentation/screens/category_screen.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/screens/chat_list_screen.dart';
@@ -70,6 +71,16 @@ class SignupRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const SignupScreen();
+  }
+}
+
+@TypedGoRoute<VerifyEmailRoute>(path: RoutePath.verifyEmail, name: RouteName.verifyEmail)
+class VerifyEmailRoute extends GoRouteData {
+  const VerifyEmailRoute();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const VerifyEmailScreen();
   }
 }
 

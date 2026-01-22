@@ -7,6 +7,7 @@ class RoutePath {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String signup = '/signup';
+  static const String verifyEmail = '/verify-email';
 
   // Profile Setup
   static const String setupBasicInfo = '/setup/basic-info';
@@ -55,6 +56,7 @@ class RouteName {
   static const String onboarding = 'onboarding';
   static const String login = 'login';
   static const String signup = 'signup';
+  static const String verifyEmail = 'verify-email';
 
   // Profile Setup
   static const String setupBasicInfo = 'setup-basic-info';
@@ -109,6 +111,7 @@ class RouteNames {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String onboarding = '/onboarding';
+  static const String verifyEmail = '/verify-email';
 
   // Profile
   static const String editProfile = '/profile/edit';
