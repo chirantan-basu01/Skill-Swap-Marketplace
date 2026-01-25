@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
 import 'package:skill_swap_marketplace/core/constants/route_constants.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
 import 'package:skill_swap_marketplace/features/session/presentation/providers/session_provider.dart';
@@ -511,7 +513,12 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () => context.go(RouteNames.home),
+                  onPressed: () {
+                    // Set navigation to Home tab (index 0)
+                    ref.read(navigationIndexProvider.notifier).state = 0;
+                    // Navigate to main shell with bottom nav
+                    const HomeRoute().go(context);
+                  },
                   child: const Text('Back to Home'),
                 ),
               ),

@@ -9,6 +9,7 @@ import 'package:skill_swap_marketplace/features/auth/presentation/providers/user
 import 'package:skill_swap_marketplace/features/skills/domain/models/skill_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 import 'package:skill_swap_marketplace/features/user/presentation/screens/user_profile_view_screen.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 
 class SwapRequestScreen extends ConsumerStatefulWidget {
   final String userId;
@@ -779,10 +780,11 @@ class _SwapRequestScreenState extends ConsumerState<SwapRequestScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    // Set navigation to Matches tab (index 1)
+                    ref.read(navigationIndexProvider.notifier).state = 1;
                     Navigator.of(context).pop(); // Close dialog
-                    Navigator.of(context).pop(); // Go back from swap request screen
-                    // Navigate to matches screen
-                    const MatchesRoute().go(context);
+                    // Navigate back to main shell with bottom nav
+                    const HomeRoute().go(context);
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -804,8 +806,11 @@ class _SwapRequestScreenState extends ConsumerState<SwapRequestScreen> {
               // Back to home link
               TextButton(
                 onPressed: () {
+                  // Set navigation to Home tab (index 0)
+                  ref.read(navigationIndexProvider.notifier).state = 0;
                   Navigator.of(context).pop(); // Close dialog
-                  Navigator.of(context).pop(); // Go back from swap request screen
+                  // Navigate back to main shell with bottom nav
+                  const HomeRoute().go(context);
                 },
                 child: const Text(
                   'Back to Home',

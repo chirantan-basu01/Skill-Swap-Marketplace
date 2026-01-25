@@ -10,6 +10,7 @@ import 'package:skill_swap_marketplace/features/chat/domain/models/message_model
 import 'package:skill_swap_marketplace/features/chat/presentation/providers/chat_provider.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/widgets/chat_input.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/swap/domain/models/swap_model.dart';
 import 'package:skill_swap_marketplace/features/swap/presentation/providers/swaps_provider.dart';
 
@@ -271,8 +272,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         }
         break;
       case 'swap':
-        // Navigate to matches screen
-        const MatchesRoute().go(context);
+        // Set navigation to Matches tab (index 1)
+        ref.read(navigationIndexProvider.notifier).state = 1;
+        // Navigate to main shell with bottom nav
+        const HomeRoute().go(context);
         break;
     }
   }

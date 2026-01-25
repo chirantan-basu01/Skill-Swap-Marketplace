@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:skill_swap_marketplace/core/config/app_router.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
-import 'package:skill_swap_marketplace/core/constants/route_constants.dart';
 import 'package:skill_swap_marketplace/core/shared/widgets/user_avatar.dart';
 import 'package:skill_swap_marketplace/features/auth/presentation/providers/auth_provider.dart';
+import 'package:skill_swap_marketplace/features/main/presentation/screens/main_shell_screen.dart';
 import 'package:skill_swap_marketplace/features/rating/presentation/providers/rating_provider.dart';
 import 'package:skill_swap_marketplace/features/rating/presentation/widgets/rating_tags.dart';
 import 'package:skill_swap_marketplace/features/rating/presentation/widgets/star_rating.dart';
@@ -402,7 +402,10 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.go(RouteNames.home);
+                    // Set navigation to Home tab (index 0)
+                    ref.read(navigationIndexProvider.notifier).state = 0;
+                    // Navigate to main shell with bottom nav
+                    const HomeRoute().go(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
@@ -523,7 +526,10 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.go(RouteNames.profile);
+                    // Set navigation to Profile tab (index 4)
+                    ref.read(navigationIndexProvider.notifier).state = 4;
+                    // Navigate to main shell with bottom nav
+                    const HomeRoute().go(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryBlue,
@@ -544,7 +550,10 @@ class _RatingScreenState extends ConsumerState<RatingScreen> {
               const SizedBox(height: Dimensions.md),
               TextButton(
                 onPressed: () {
-                  context.go(RouteNames.home);
+                  // Set navigation to Home tab (index 0)
+                  ref.read(navigationIndexProvider.notifier).state = 0;
+                  // Navigate to main shell with bottom nav
+                  const HomeRoute().go(context);
                 },
                 child: const Text(
                   'Back to Home',
