@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/services/image_cache_service.dart';
 
 /// Size variants for user avatar
 enum AvatarSize {
@@ -96,16 +97,50 @@ class UserAvatar extends StatelessWidget {
 
   Widget _buildAvatarContent(double avatarSize) {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
+      // Calculate cache dimension for memory optimization
+      final cacheDimension = ImageSizeConfig.getCacheDimension(avatarSize);
+
       return CachedNetworkImage(
         imageUrl: imageUrl!,
         width: avatarSize,
         height: avatarSize,
         fit: BoxFit.cover,
-        placeholder: (context, url) => _buildPlaceholder(avatarSize),
+        // Use custom cache manager
+        cacheManager: AppImageCacheManager.instance,
+        // Limit memory cache size for better performance
+        memCacheWidth: cacheDimension,
+        memCacheHeight: cacheDimension,
+        // Fade in animation
+        fadeInDuration: const Duration(milliseconds: 200),
+        fadeOutDuration: const Duration(milliseconds: 200),
+        // Placeholder while loading
+        placeholder: (context, url) => _buildShimmerPlaceholder(avatarSize),
+        // Error widget with fallback to initials
         errorWidget: (context, url, error) => _buildPlaceholder(avatarSize),
       );
     }
     return _buildPlaceholder(avatarSize);
+  }
+
+  Widget _buildShimmerPlaceholder(double avatarSize) {
+    return Container(
+      width: avatarSize,
+      height: avatarSize,
+      decoration: BoxDecoration(
+        color: AppColors.gray200,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: SizedBox(
+          width: avatarSize * 0.4,
+          height: avatarSize * 0.4,
+          child: const CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.gray300,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildPlaceholder(double avatarSize) {

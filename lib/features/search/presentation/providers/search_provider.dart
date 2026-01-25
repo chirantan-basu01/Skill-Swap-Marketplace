@@ -80,7 +80,7 @@ enum SearchSortOption {
   }
 }
 
-/// Search state
+/// Search state with pagination support
 class SearchState {
   final String query;
   final SearchFilters filters;
@@ -89,6 +89,8 @@ class SearchState {
   final bool isLoading;
   final String? error;
   final bool hasSearched;
+  final bool hasMore;
+  final DocumentSnapshot? lastDocument;
 
   const SearchState({
     this.query = '',
@@ -98,7 +100,12 @@ class SearchState {
     this.isLoading = false,
     this.error,
     this.hasSearched = false,
+    this.hasMore = true,
+    this.lastDocument,
   });
+
+  /// Whether we can load more results
+  bool get canLoadMore => hasMore && !isLoading && hasSearched;
 
   SearchState copyWith({
     String? query,
@@ -109,6 +116,9 @@ class SearchState {
     String? error,
     bool? clearError,
     bool? hasSearched,
+    bool? hasMore,
+    DocumentSnapshot? lastDocument,
+    bool clearLastDocument = false,
   }) {
     return SearchState(
       query: query ?? this.query,
@@ -118,15 +128,18 @@ class SearchState {
       isLoading: isLoading ?? this.isLoading,
       error: clearError == true ? null : (error ?? this.error),
       hasSearched: hasSearched ?? this.hasSearched,
+      hasMore: hasMore ?? this.hasMore,
+      lastDocument: clearLastDocument ? null : (lastDocument ?? this.lastDocument),
     );
   }
 }
 
-/// Search notifier with debounce
+/// Search notifier with debounce and pagination
 @riverpod
 class SearchNotifier extends _$SearchNotifier {
   Timer? _debounceTimer;
   static const _debounceDuration = Duration(milliseconds: 300);
+  static const _pageSize = 20;
 
   @override
   SearchState build() {
@@ -183,12 +196,22 @@ class SearchNotifier extends _$SearchNotifier {
     state = const SearchState();
   }
 
-  /// Perform search with current query and filters
-  Future<void> _performSearch() async {
+  /// Perform search with current query and filters (paginated)
+  Future<void> _performSearch({bool loadMore = false}) async {
     final query = state.query.trim().toLowerCase();
     final filters = state.filters;
 
-    state = state.copyWith(isLoading: true, clearError: true, hasSearched: true);
+    if (loadMore && (!state.canLoadMore || state.lastDocument == null)) {
+      return;
+    }
+
+    state = state.copyWith(
+      isLoading: true,
+      clearError: true,
+      hasSearched: true,
+      // Reset pagination on new search
+      hasMore: loadMore ? state.hasMore : true,
+    );
 
     try {
       final currentUser = ref.read(authRepositoryProvider).currentUser;
@@ -200,19 +223,26 @@ class SearchNotifier extends _$SearchNotifier {
         return;
       }
 
-      // Fetch users from Firestore
-      final snapshot = await FirebaseFirestore.instance
+      // Build base query (simple query without composite index)
+      var firestoreQuery = FirebaseFirestore.instance
           .collection(FirestoreCollections.users)
-          .where('status', isEqualTo: 'active')
-          .limit(100)
-          .get();
+          .limit(_pageSize * 2); // Fetch extra to account for filtering
+
+      // Apply cursor for pagination
+      if (loadMore && state.lastDocument != null) {
+        firestoreQuery = firestoreQuery.startAfterDocument(state.lastDocument!);
+      }
+
+      final snapshot = await firestoreQuery.get();
 
       var users = snapshot.docs
           .map((doc) => UserModel.fromJson(doc.data()))
-          .where((user) => user.uid != currentUser.uid)
+          .where((user) =>
+              user.uid != currentUser.uid &&
+              user.status == UserStatus.active)
           .toList();
 
-      // Apply text search filter
+      // Apply text search filter (client-side for now)
       if (query.isNotEmpty) {
         users = users.where((user) {
           // Search in display name
@@ -255,9 +285,14 @@ class SearchNotifier extends _$SearchNotifier {
       // Sort results
       users = _sortResults(users, state.sortOption, currentUserModel);
 
+      // Combine with existing results if loading more
+      final allResults = loadMore ? [...state.results, ...users] : users;
+
       state = state.copyWith(
-        results: users,
+        results: allResults,
         isLoading: false,
+        hasMore: snapshot.docs.length == _pageSize,
+        lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
       );
     } catch (e) {
       state = state.copyWith(
@@ -265,6 +300,12 @@ class SearchNotifier extends _$SearchNotifier {
         error: 'Search failed. Please try again.',
       );
     }
+  }
+
+  /// Load more results (pagination)
+  Future<void> loadMore() async {
+    if (!state.canLoadMore) return;
+    await _performSearch(loadMore: true);
   }
 
   List<UserModel> _applyFilters(
@@ -388,9 +429,18 @@ class SearchNotifier extends _$SearchNotifier {
     _browseAll();
   }
 
-  /// Browse all users (no query filter, just sort)
-  Future<void> _browseAll() async {
-    state = state.copyWith(isLoading: true, clearError: true, hasSearched: true);
+  /// Browse all users (no query filter, just sort) with pagination
+  Future<void> _browseAll({bool loadMore = false}) async {
+    if (loadMore && (!state.canLoadMore || state.lastDocument == null)) {
+      return;
+    }
+
+    state = state.copyWith(
+      isLoading: true,
+      clearError: true,
+      hasSearched: true,
+      hasMore: loadMore ? state.hasMore : true,
+    );
 
     try {
       final currentUser = ref.read(authRepositoryProvider).currentUser;
@@ -402,16 +452,23 @@ class SearchNotifier extends _$SearchNotifier {
         return;
       }
 
-      // Fetch users from Firestore
-      final snapshot = await FirebaseFirestore.instance
+      // Build base query (simple query without composite index)
+      var firestoreQuery = FirebaseFirestore.instance
           .collection(FirestoreCollections.users)
-          .where('status', isEqualTo: 'active')
-          .limit(100)
-          .get();
+          .limit(_pageSize * 2); // Fetch extra to account for filtering
+
+      // Apply cursor for pagination
+      if (loadMore && state.lastDocument != null) {
+        firestoreQuery = firestoreQuery.startAfterDocument(state.lastDocument!);
+      }
+
+      final snapshot = await firestoreQuery.get();
 
       var users = snapshot.docs
           .map((doc) => UserModel.fromJson(doc.data()))
-          .where((user) => user.uid != currentUser.uid)
+          .where((user) =>
+              user.uid != currentUser.uid &&
+              user.status == UserStatus.active)
           .toList();
 
       // Get current user model for match score calculation
@@ -429,10 +486,15 @@ class SearchNotifier extends _$SearchNotifier {
       // Sort results
       users = _sortResults(users, state.sortOption, currentUserModel);
 
+      // Combine with existing results if loading more
+      final allResults = loadMore ? [...state.results, ...users] : users;
+
       state = state.copyWith(
-        results: users,
+        results: allResults,
         isLoading: false,
-        query: '', // Clear query to indicate browse mode
+        query: loadMore ? state.query : '', // Keep query if loading more
+        hasMore: snapshot.docs.length == _pageSize,
+        lastDocument: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
       );
     } catch (e) {
       state = state.copyWith(

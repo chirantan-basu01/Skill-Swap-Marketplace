@@ -45,9 +45,9 @@ final suggestedUsersProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SuggestedUsersRef = AutoDisposeFutureProviderRef<List<UserModel>>;
-String _$searchNotifierHash() => r'd9f67566b9df292c200c468165b2fd69236fb15e';
+String _$searchNotifierHash() => r'6f265fe44c86bfe535a91cc5326f349192a5e9e9';
 
-/// Search notifier with debounce
+/// Search notifier with debounce and pagination
 ///
 /// Copied from [SearchNotifier].
 @ProviderFor(SearchNotifier)
