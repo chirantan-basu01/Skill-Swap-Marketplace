@@ -7,7 +7,7 @@ part of 'users_provider.dart';
 // **************************************************************************
 
 String _$paginatedUsersNotifierHash() =>
-    r'ddf1db1b8490dbf9226af67cb7d673ab2dde7e2b';
+    r'289653b8cec4b98abff078f399ca92aa8104d59a';
 
 /// Paginated users notifier for infinite scroll lists
 ///

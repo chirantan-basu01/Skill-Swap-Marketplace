@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skill_swap_marketplace/core/constants/color_constants.dart';
 import 'package:skill_swap_marketplace/core/constants/dimensions.dart';
+import 'package:skill_swap_marketplace/core/shared/widgets/offline_indicator.dart';
 import 'package:skill_swap_marketplace/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:skill_swap_marketplace/features/home/presentation/screens/home_screen.dart';
 import 'package:skill_swap_marketplace/features/profile/presentation/screens/profile_screen.dart';
@@ -47,18 +48,26 @@ class MainShellScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigationIndexProvider);
 
-    return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: const [
-          HomeScreen(),
-          MatchesScreen(),
-          ChatListScreen(),
-          WalletScreen(),
-          ProfileScreen(),
-        ],
-      ),
-      bottomNavigationBar: Container(
+    return ConnectivityListener(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+              child: IndexedStack(
+                index: currentIndex,
+                children: const [
+                  HomeScreen(),
+                  MatchesScreen(),
+                  ChatListScreen(),
+                  WalletScreen(),
+                  ProfileScreen(),
+                ],
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
           boxShadow: [
@@ -92,6 +101,7 @@ class MainShellScreen extends ConsumerWidget {
               ),
             ),
           ),
+        ),
         ),
       ),
     );

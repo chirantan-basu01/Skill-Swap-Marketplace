@@ -28,7 +28,7 @@
 **Progress: Phase 2 - 100% complete (5/5 steps) ✅**
 **Progress: Phase 3 - 100% complete (3/3 steps) ✅**
 **Progress: Phase 4 - 100% complete (3/3 steps) ✅**
-**Progress: Phase 5 - 33% complete (1/3 steps)**
+**Progress: Phase 5 - 100% complete (3/3 steps)**
 
 ### Recent Bug Fixes & Improvements
 - Fixed stale user data when switching accounts (providers now watch `authStateChangesProvider`)
@@ -361,19 +361,42 @@ Allow users to update their skills after initial profile setup.
 - `UserAvatar` updated with optimized caching, fade animations, and shimmer placeholder
 - Firestore indexes defined in `firestore.indexes.json` for users, swaps, chats, messages, notifications, reports
 
-### ⬜ Step 5.2: Offline Support
+### ✅ Step 5.2: Offline Support - COMPLETED
 | Status | Task | Description |
 |--------|------|-------------|
-| ⬜ | Firestore persistence | Enable offline persistence |
-| ⬜ | Offline indicators | Show connection status |
+| ✅ | Firestore persistence | Enable offline persistence |
+| ✅ | Offline indicators | Show connection status |
 
-### ⬜ Step 5.3: Final Polish
+**Components Created:**
+- Firestore offline persistence enabled with unlimited cache size in `main.dart`
+- `ConnectivityService` - Riverpod-based connectivity monitoring (`lib/core/services/connectivity_service.dart`)
+- `connectivityNotifierProvider` - Real-time connection status state
+- `isOnlineProvider` / `isOfflineProvider` - Simple boolean providers for connection checks
+- `OfflineBanner` - Animated banner showing "You are offline" at top of screen
+- `ConnectivityListener` - Widget that shows snackbars on connectivity changes
+- `ConnectionStatusDot` - Small dot indicator for online/offline status
+- `OfflineAwareWidget` - Conditional rendering based on connectivity
+- Integration with `MainShellScreen` - Offline banner and connectivity listener
+
+### ✅ Step 5.3: Final Polish - COMPLETED
 | Status | Task | Description |
 |--------|------|-------------|
-| ⬜ | App icons | Generate app icons for all platforms |
-| ⬜ | Splash screen assets | Native splash configuration |
-| ⬜ | Store listings | Screenshots, descriptions |
-| ⬜ | Testing | End-to-end testing |
+| ✅ | App icons | Generate app icons for all platforms |
+| ✅ | Splash screen assets | Native splash configuration |
+| ⬜ | Store listings | Screenshots, descriptions (manual) |
+| ⬜ | Testing | End-to-end testing (manual) |
+
+**Components Created:**
+- `flutter_launcher_icons` configured in `pubspec.yaml` for Android & iOS icons
+- `flutter_native_splash` configured for native splash screens
+- `assets/icons/app_icon.png` - 1024x1024 app icon with swap arrows design
+- `assets/icons/splash_icon.png` - 512x512 splash icon with circular design
+- `tool/generate_icon.dart` - Script to regenerate app icon
+- `tool/generate_splash.dart` - Script to regenerate splash icon
+- Android adaptive icons with primary blue background
+- iOS icons with proper background color
+- Native splash screens for Android (including Android 12+) and iOS
+- Dark mode splash screen support
 
 ---
 

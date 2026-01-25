@@ -129,32 +129,31 @@ class AddSkillOfferedDialog extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: Dimensions.sm),
-                      Row(
+                      Wrap(
+                        spacing: Dimensions.sm,
+                        runSpacing: Dimensions.sm,
                         children: SkillLevel.values.map((level) {
                           final isSelected = selectedLevel == level;
-                          return Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: level != SkillLevel.expert
-                                    ? Dimensions.sm
-                                    : 0,
-                              ),
-                              child: ChoiceChip(
-                                label: Text(_formatLevel(level)),
-                                selected: isSelected,
-                                onSelected: (selected) {
-                                  if (selected) {
-                                    ref.read(_selectedLevelProvider.notifier).state = level;
-                                  }
-                                },
-                                selectedColor: AppColors.primaryBlue,
-                                labelStyle: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
-                                  fontSize: 12,
-                                ),
-                              ),
+                          return ChoiceChip(
+                            label: Text(_formatLevel(level)),
+                            selected: isSelected,
+                            showCheckmark: isSelected,
+                            onSelected: (selected) {
+                              if (selected) {
+                                ref.read(_selectedLevelProvider.notifier).state = level;
+                              }
+                            },
+                            selectedColor: AppColors.primaryBlue,
+                            labelStyle: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                              fontSize: 13,
+                              fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Dimensions.sm,
+                              vertical: Dimensions.xs,
                             ),
                           );
                         }).toList(),
@@ -344,32 +343,31 @@ class AddSkillWantedDialog extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: Dimensions.sm),
-                      Row(
+                      Wrap(
+                        spacing: Dimensions.sm,
+                        runSpacing: Dimensions.sm,
                         children: SkillLevel.values.map((level) {
                           final isSelected = selectedLevel == level;
-                          return Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                right: level != SkillLevel.expert
-                                    ? Dimensions.sm
-                                    : 0,
-                              ),
-                              child: ChoiceChip(
-                                label: Text(_formatLevel(level)),
-                                selected: isSelected,
-                                onSelected: (selected) {
-                                  if (selected) {
-                                    ref.read(_selectedLevelProvider.notifier).state = level;
-                                  }
-                                },
-                                selectedColor: AppColors.primaryBlue,
-                                labelStyle: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
-                                  fontSize: 12,
-                                ),
-                              ),
+                          return ChoiceChip(
+                            label: Text(_formatLevel(level)),
+                            selected: isSelected,
+                            showCheckmark: isSelected,
+                            onSelected: (selected) {
+                              if (selected) {
+                                ref.read(_selectedLevelProvider.notifier).state = level;
+                              }
+                            },
+                            selectedColor: AppColors.primaryBlue,
+                            labelStyle: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                              fontSize: 13,
+                              fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Dimensions.sm,
+                              vertical: Dimensions.xs,
                             ),
                           );
                         }).toList(),
