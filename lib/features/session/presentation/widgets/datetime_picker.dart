@@ -485,14 +485,14 @@ class VideoLinkInput extends StatelessWidget {
               label: 'Google Meet',
               icon: Icons.video_call,
               color: const Color(0xFF00897B), // Google Meet teal
-              onTap: () => _launchUrl('https://meet.google.com/new'),
+              onTap: () => _showMeetInstructions(context, 'Google Meet', 'meet.google.com'),
             ),
             const SizedBox(width: 8),
             _VideoProviderButton(
               label: 'Zoom',
               icon: Icons.videocam,
               color: const Color(0xFF2D8CFF), // Zoom blue
-              onTap: () => _launchUrl('https://zoom.us/start/videomeeting'),
+              onTap: () => _showMeetInstructions(context, 'Zoom', 'zoom.us'),
             ),
           ],
         ),
@@ -500,12 +500,100 @@ class VideoLinkInput extends StatelessWidget {
     );
   }
 
-  Future<void> _launchUrl(String url) async {
+  void _showMeetInstructions(BuildContext context, String provider, String url) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(Dimensions.lg),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLg)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.gray300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: Dimensions.lg),
+            Icon(
+              provider == 'Google Meet' ? Icons.video_call : Icons.videocam,
+              size: 48,
+              color: provider == 'Google Meet'
+                  ? const Color(0xFF00897B)
+                  : const Color(0xFF2D8CFF),
+            ),
+            const SizedBox(height: Dimensions.md),
+            Text(
+              'Create $provider Link',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: Dimensions.sm),
+            Text(
+              'Open $url in your browser, create a meeting, then copy and paste the link here.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: Dimensions.lg),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _tryLaunchUrl(context, provider == 'Google Meet'
+                      ? 'https://meet.google.com'
+                      : 'https://zoom.us/signin');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: provider == 'Google Meet'
+                      ? const Color(0xFF00897B)
+                      : const Color(0xFF2D8CFF),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(Dimensions.radiusMd),
+                  ),
+                ),
+                child: Text('Open $provider'),
+              ),
+            ),
+            SizedBox(height: MediaQuery.of(context).padding.bottom + Dimensions.sm),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _tryLaunchUrl(BuildContext context, String url) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      debugPrint('Could not launch: $url');
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please open $url in your browser')),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please open $url in your browser')),
+        );
+      }
     }
   }
 }
