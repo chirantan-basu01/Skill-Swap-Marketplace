@@ -44,7 +44,7 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: Dimensions.cardElevation,
         color: AppColors.cardBackground,
         surfaceTintColor: Colors.transparent,
@@ -155,7 +155,7 @@ class AppTheme {
       ),
 
       // Tab Bar Theme
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelColor: AppColors.primaryBlue,
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppColors.primaryBlue,
@@ -203,7 +203,7 @@ class AppTheme {
       ),
 
       // Dialog Theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
