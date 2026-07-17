@@ -10,6 +10,7 @@ A time-banking mobile application where users exchange skills using time credits
 
 - [Overview](#overview)
 - [Features](#features)
+- [Demo](#demo)
 - [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
@@ -86,6 +87,24 @@ Skill Swap Marketplace is a peer-to-peer skill exchange platform that eliminates
 - Report system for inappropriate behavior
 - Block user functionality
 - Anti-abuse measures (rate limits, cooldowns)
+
+---
+
+## Demo
+
+### App Walkthrough
+
+https://github.com/chirantan-basu01/Skill-Swap-Marketplace/raw/main/walkthrough/walkthrough.mp4
+
+[▶ Watch the app walkthrough](walkthrough/walkthrough.mp4)
+
+### Test Credentials
+
+Use this account to explore the app without signing up:
+
+| Email | Password |
+|-------|----------|
+| `chirantanbasu@yopmail.com` | `Password123!` |
 
 ---
 
